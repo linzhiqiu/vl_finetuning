@@ -36,11 +36,13 @@ The instructions to prepare each dataset are detailed below. To ensure reproduci
 ### ImageNet
 
 - Create a folder named `imagenet/` under `$DATA`.
+- Download `split_ImageNet.json` [(google drive link))](https://drive.google.com/file/d/1SvPIN6iV6NP2Oulj19a869rBXrB5SNFo/view) to this folder. (Note that the original CoOp does not make a train/val split.)
 - Create `images/` under `imagenet/`.
 - Download the dataset from the [official website](https://image-net.org/index.php) and extract the training and validation sets to `$DATA/imagenet/images`. The directory structure should look like
 
 ```
 imagenet/
+|–– split_ImageNet.json
 |–– images/
 |   |–– train/ # contains 1,000 folders like n01440764, n01443537, etc.
 |   |–– val/
@@ -209,7 +211,7 @@ ucf101/
 ### ImageNetV2
 
 - Create a folder named `imagenetv2/` under `$DATA`.
-- Go to this github repo <https://github.com/modestyachts/ImageNetV2>.
+<!-- - Go to this github repo <https://github.com/modestyachts/ImageNetV2>. -->
 - Download the matched-frequency dataset from <https://s3-us-west-2.amazonaws.com/imagenetv2public/imagenetv2-matched-frequency.tar.gz> and extract it to `$DATA/imagenetv2/`.
 - Copy `$DATA/imagenet/classnames.txt` to `$DATA/imagenetv2/`.
 
@@ -223,8 +225,9 @@ imagenetv2/
 
 ### ImageNet-Sketch
 
-- Download the dataset from <https://github.com/HaohanWang/ImageNet-Sketch>.
-- Extract the dataset to `$DATA/imagenet-sketch`.
+- Create a folder named `imagenet-sketch/` under `$DATA`.
+- Download the dataset from <https://github.com/HaohanWang/ImageNet-Sketch> (if you have [gdown](https://pypi.org/project/gdown/) installed, you can run `gdown https://drive.google.com/uc?id=1Mj0i5HBthqH1p_yeXzsg22gZduvgoNeA`).
+- Extract the dataset to `$DATA/imagenet-sketch`. Rename the folder `sketch/` to `images/`.
 - Copy `$DATA/imagenet/classnames.txt` to `$DATA/imagenet-sketch/`.
 
 The directory structure should look like
@@ -238,7 +241,8 @@ imagenet-sketch/
 ### ImageNet-A
 
 - Create a folder named `imagenet-adversarial/` under `$DATA`.
-- Download the dataset from <https://github.com/hendrycks/natural-adv-examples> and extract it to `$DATA/imagenet-adversarial/`.
+- Download the dataset from <https://github.com/hendrycks/natural-adv-examples> (or run `wget https://people.eecs.berkeley.edu/~hendrycks/imagenet-a.tar`)
+- Extract it to `$DATA/imagenet-adversarial/`.
 - Copy `$DATA/imagenet/classnames.txt` to `$DATA/imagenet-adversarial/`.
 
 The directory structure should look like
@@ -252,7 +256,8 @@ imagenet-adversarial/
 ### ImageNet-R
 
 - Create a folder named `imagenet-rendition/` under `$DATA`.
-- Download the dataset from <https://github.com/hendrycks/imagenet-r> and extract it to `$DATA/imagenet-rendition/`.
+- Download the dataset from <https://github.com/hendrycks/imagenet-r> (or run `wget https://people.eecs.berkeley.edu/~hendrycks/imagenet-r.tar`)
+- Extract it to `$DATA/imagenet-rendition/`.
 - Copy `$DATA/imagenet/classnames.txt` to `$DATA/imagenet-rendition/`.
 
 The directory structure should look like

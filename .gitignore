@@ -1,5 +1,16 @@
 # Dataset folder
-datasets/
+data/
+
+# Output folders
+features/
+trained_models/
+eval/
+
+# ImageNet train/val/test split file
+splits/split_ImageNet.json
+
+# vscode
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
