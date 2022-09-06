@@ -45,10 +45,20 @@ python split_for_few_shot.py --dataset-config-file config/datasets/imagenet.yaml
 ```
 
 ## Feature Extraction
-We provide few-shot train/val splits for seed 1, 2, 3, and shots 1, 2, 4, 8, 16 in [indices/](indices/), as they were generated from the original [CoOp codebase](https://github.com/KaiyangZhou/CoOp) (except for ImageNet). If you want to generate more splits with different shots and seeds, please refer to [split_for_few_shot.py]. You will need to specify a dataset config yaml file such as [engine/config/datasets/imagenet.yaml](configs/datasets/imagenet.yaml), and a few-shot config yaml file such as [engine/configs/few_shot/shot_16.yaml](configs/few_shot/shot_16.yaml). Then run:
+You may use [features.py](features.py) to extract image and text features from a frozen CLIP model. You may specify the configuration for feature extraction in a yaml file, such as [config/features/rn50_view_1_ccrop_template_default.yaml](config/features/rn50_view_1_ccrop_template_default.yaml), then run:
 
 ```
-python split_for_few_shot.py --dataset-config-file config/datasets/imagenet.yaml --few-shot-config-file config/few_shot/shot_1.yaml SEED 1
+python split_for_few_shot.py \
+    --dataset-config-file config/datasets/imagenet.yaml \
+    --few-shot-config-file config/few_shot/shot_1.yaml \
+    --features-config-file config/features/rn50_view_1_ccrop_template_default.yaml \
+    SEED 1
+```
+
+Or you can quickly extract features for multiple configuration yaml files via [features.sh](features.sh):
+
+```
+bash features.sh
 ```
 
 <!-- ## How to Run

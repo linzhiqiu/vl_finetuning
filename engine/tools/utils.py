@@ -6,6 +6,7 @@ import pickle
 import os
 import torch
 import json
+import PIL
 
 
 def set_random_seed(seed):
@@ -86,3 +87,15 @@ def load_json(json_location, default_obj=None):
             return default_obj
     else:
         return default_obj
+
+
+def collect_env_info():
+    """Return env info as a string.
+
+    Code source: github.com/facebookresearch/maskrcnn-benchmark
+    """
+    from torch.utils.collect_env import get_pretty_env_info
+
+    env_str = get_pretty_env_info()
+    env_str += "\n        Pillow ({})".format(PIL.__version__)
+    return env_str

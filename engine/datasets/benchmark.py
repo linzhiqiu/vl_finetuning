@@ -4,6 +4,7 @@ from collections import defaultdict
 
 from engine.tools.utils import check_isfile, load_json, save_as_json, listdir_nohidden
 
+
 def read_split(filepath, path_prefix):
     '''Read train/val/test split from a json file.'''
     def _convert(items):

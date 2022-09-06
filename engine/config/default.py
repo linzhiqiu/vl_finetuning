@@ -22,7 +22,6 @@ _C.EVAL_DIR = f"./eval"
 ###########################
 _C.SEED = 1
 
-
 ###########################
 # Dataset Config
 ###########################
@@ -34,13 +33,21 @@ _C.DATASET.NUM_SHOTS = 16
 # Maximum size of val shots (otherwise same size as train shots)
 _C.DATASET.MAX_VAL_SHOTS = 4
 
-
 ###########################
-# Feature Extraction Config
+# Feature Extraction Config 
+# (need to consider transform/backbone in later parts)
 ###########################
 _C.FEATURE = CN()
-# FEATURE name
+# FEATURE name, must be UNIQUE for each config
 _C.FEATURE.NAME = ""
+# Number of views per train image
+_C.FEATURE.VIEWS_PER_TRAIN = 1
+# Number of views per val image
+_C.FEATURE.VIEWS_PER_VAL = 1
+# Which layer to extract features from. 0 if extracting from last layer output
+_C.FEATURE.LAYER_IDX = 0
+# Templates to use (defined in engine/template/default.py)
+_C.FEATURE.TEMPLATE = "default"
 
 # TODO: Remove irrelevant configs
 ###########################
@@ -58,14 +65,17 @@ _C.VERBOSE = True
 _C.INPUT = CN()
 _C.INPUT.SIZE = (224, 224)
 # Mode of interpolation in resize functions
-_C.INPUT.INTERPOLATION = "bilinear"
+_C.INPUT.INTERPOLATION = "bicubic"
 # For available choices please refer to transforms.py
 _C.INPUT.TRANSFORMS = ()
 # If True, tfm_train and tfm_test will be None
 _C.INPUT.NO_TRANSFORM = False
 # Mean and std (default: ImageNet)
-_C.INPUT.PIXEL_MEAN = [0.485, 0.456, 0.406]
-_C.INPUT.PIXEL_STD = [0.229, 0.224, 0.225]
+# _C.INPUT.PIXEL_MEAN = [0.485, 0.456, 0.406]
+# _C.INPUT.PIXEL_STD = [0.229, 0.224, 0.225]
+# Mean and std (default: CoOp)
+_C.INPUT.PIXEL_MEAN = [0.48145466, 0.4578275, 0.40821073]
+_C.INPUT.PIXEL_STD = [0.26862954, 0.26130258, 0.27577711]
 # Random crop
 _C.INPUT.CROP_PADDING = 4
 # Random resized crop
@@ -95,46 +105,14 @@ _C.INPUT.GB_K = 21  # kernel size (should be an odd number)
 ###########################
 _C.DATALOADER = CN()
 _C.DATALOADER.NUM_WORKERS = 4
-# Apply transformations to an image K times (during training)
-_C.DATALOADER.K_TRANSFORMS = 1
-# img0 denotes image tensor without augmentation
-# Useful for consistency learning
-_C.DATALOADER.RETURN_IMG0 = False
-# Setting for the train_x data-loader
-_C.DATALOADER.TRAIN_X = CN()
-_C.DATALOADER.TRAIN_X.SAMPLER = "RandomSampler"
-_C.DATALOADER.TRAIN_X.BATCH_SIZE = 32
-# Parameter for RandomDomainSampler
-# 0 or -1 means sampling from all domains
-_C.DATALOADER.TRAIN_X.N_DOMAIN = 0
-# Parameter of RandomClassSampler
-# Number of instances per class
-_C.DATALOADER.TRAIN_X.N_INS = 16
-
-# Setting for the train_u data-loader
-_C.DATALOADER.TRAIN_U = CN()
-# Set to false if you want to have unique
-# data loader params for train_u
-_C.DATALOADER.TRAIN_U.SAME_AS_X = True
-_C.DATALOADER.TRAIN_U.SAMPLER = "RandomSampler"
-_C.DATALOADER.TRAIN_U.BATCH_SIZE = 32
-_C.DATALOADER.TRAIN_U.N_DOMAIN = 0
-_C.DATALOADER.TRAIN_U.N_INS = 16
-
-# Setting for the test data-loader
-_C.DATALOADER.TEST = CN()
-_C.DATALOADER.TEST.SAMPLER = "SequentialSampler"
-_C.DATALOADER.TEST.BATCH_SIZE = 32
+_C.DATALOADER.BATCH_SIZE = 32
+_C.DATALOADER.TEST_BATCH_SIZE = 32
 
 ###########################
 # Model
 ###########################
 _C.MODEL = CN()
-# Path to model weights (for initialization)
-_C.MODEL.INIT_WEIGHTS = ""
-_C.MODEL.BACKBONE = CN()
-_C.MODEL.BACKBONE.NAME = ""
-_C.MODEL.BACKBONE.PRETRAINED = True
+_C.MODEL.BACKBONE = ""
 # Definition of embedding layers
 _C.MODEL.HEAD = CN()
 # If none, do not construct embedding layers, the

@@ -1,0 +1,17 @@
+DEFAULT_TEMPLATES = {
+    "oxford_pets": ["a photo of a {}, a type of pet."],
+    "oxford_flowers": ["a photo of a {}, a type of flower."],
+    "fgvc_aircraft": ["a photo of a {}, a type of aircraft."],
+    "dtd": ["{} texture."],
+    "eurosat": ["a centered satellite photo of {}."],
+    "stanford_cars": ["a photo of a {}."],
+    "food101": ["a photo of {}, a type of food."],
+    "sun397": ["a photo of a {}."],
+    "caltech101": ["a photo of a {}."],
+    "ucf101": ["a photo of a person doing {}."],
+    "imagenet": ["a photo of a {}."],
+    "imagenet_sketch": ["a photo of a {}."],
+    "imagenetv2": ["a photo of a {}."],
+    "imagenet_a": ["a photo of a {}."],
+    "imagenet_r": ["a photo of a {}."],
+}

@@ -1,3 +1,6 @@
 ftfy
 regex
 tqdm
+tabulate
+yacs
+scipy
