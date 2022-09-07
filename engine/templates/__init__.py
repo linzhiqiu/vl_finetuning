@@ -3,7 +3,11 @@ from engine.templates.extra import EXTRA_TEMPLATES
 
 def get_templates(dataset_name, template_name):
     """Return a list of templates to use for the given config."""
-    if template_name == 'default':
+    if template_name == 'classname':
+        return ["{}"]
+    elif template_name == 'single':
+        return ["a photo of a {}."]
+    elif template_name == 'default':
         return DEFAULT_TEMPLATES[dataset_name]
     elif template_name == 'extra':
         if EXTRA_TEMPLATES[dataset_name] is None:
