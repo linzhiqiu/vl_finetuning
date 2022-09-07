@@ -1,0 +1,12 @@
+FEATURE:
+  NAME: "rn50_view_1_ccrop_template_default"
+  VIEWS_PER_TRAIN: 1
+  VIEWS_PER_VAL: 1
+  LAYER_IDX: 0
+  TEMPLATE: "default"
+
+INPUT:
+  TRANSFORMS: ["center_crop", "normalize"]
+
+MODEL:
+  BACKBONE: "RN50"
