@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DATASET=imagenet
+# DATASET=oxford_flowers
 
 for SHOTS in 1 2 4 8 16
 do 

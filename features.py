@@ -163,8 +163,8 @@ def main(args):
     if torch.cuda.is_available() and cfg.USE_CUDA:
         torch.backends.cudnn.benchmark = True
 
-    print("Collecting env info ...")
-    print("** System info **\n{}\n".format(collect_env_info()))
+    # print("Collecting env info ...")
+    # print("** System info **\n{}\n".format(collect_env_info()))
 
     # Check if few-shot indices exist
     few_shot_index_file = os.path.join(

@@ -104,7 +104,7 @@ stanford_cars/
 ### Flowers102
 
 - Create a folder named `oxford_flowers/` under `$DATA`.
-- Download the images and labels from <https://www.robots.ox.ac.uk/~vgg/data/flowers/102/102flowers.tgz> and <https://www.robots.ox.ac.uk/~vgg/data/flowers/102/imagelabels.mat> respectively.
+- Download and extract the images and labels from <https://www.robots.ox.ac.uk/~vgg/data/flowers/102/102flowers.tgz> and <https://www.robots.ox.ac.uk/~vgg/data/flowers/102/imagelabels.mat> respectively.
 - Copy `split_zhou_OxfordFlowers.json` from [splits/split_zhou_OxfordFlowers.json](splits/split_zhou_OxfordFlowers.json) to this folder.
 - Copy `cat_to_name.json` from [splits/cat_to_name.json](splits/cat_to_name.json) to this folder.
 

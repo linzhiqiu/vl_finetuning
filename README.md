@@ -31,11 +31,11 @@ Follow [DATASETS.md](DATASETS.md) to install the downstream datasets. Note that 
 ## Configuration
 Similar to [CoOp](https://github.com/KaiyangZhou/CoOp), we use [yacs](https://github.com/rbgirshick/yacs) to specify all experiment configurations for reproducibility. The root configuration file can be found at [engine/config/default.py](engine/config/default.py), and you may want to modify the `_C.DATA_DIR` path to where you install all the datasets. Note that this config is different from the default one in CoOp codebase; for simplicity, we remove irrelevant configuration for semi-supervised learning and only keep the ones for vision&language finetuning.
 
-## Convert few-shot train/val sets from CoOp pickle objects to json
+<!-- ## Convert few-shot train/val sets from CoOp pickle objects to json
 
 ```
 python convert_pickle_to_index.py --dataset-config-file config/datasets/oxford_pets.yaml --few-shot-config-file config/few_shot/shot_1.yaml SEED 1
-```
+``` -->
 
 ## Split few-shot train/val sets
 We provide few-shot train/val splits for seed 1, 2, 3, and shots 1, 2, 4, 8, 16 in [indices/](indices/), as they were generated from the original [CoOp codebase](https://github.com/KaiyangZhou/CoOp) (except for ImageNet). If you want to generate more splits with different shots and seeds, please refer to [split_for_few_shot.py]. You will need to specify a dataset config yaml file such as [engine/config/datasets/imagenet.yaml](configs/datasets/imagenet.yaml), and a few-shot config yaml file such as [engine/configs/few_shot/shot_16.yaml](configs/few_shot/shot_16.yaml). Then run:
@@ -49,10 +49,10 @@ You may use [features.py](features.py) to extract image and text features from a
 
 ```
 python features.py \
-    --dataset-config-file config/datasets/imagenet.yaml \
+    --dataset-config-file config/datasets/dtd.yaml \
     --few-shot-config-file config/few_shot/shot_1.yaml \
-    --image-encoder-config-file config/features/image/rn50_layer_0.yaml \
-    --text-encoder-config-file layer_0.yaml \
+    --image-encoder-config-file config/features/image/vitb16_layer_1.yaml \
+    --text-encoder-config-file config/features/text/layer_0.yaml \
     --template-config-file config/features/template/single.yaml \
     --view-config-file config/features/view/view_1_ccrop.yaml \
     SEED 1

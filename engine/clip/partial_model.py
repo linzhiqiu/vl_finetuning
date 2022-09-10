@@ -149,8 +149,10 @@ class PartialViT(nn.Module):
                        ln_pre=None,
                        transformer_encoder=None,
                        ln_post=None,
-                       proj=None):
+                       proj=None,
+                 mode='feature_extractor'):
         super().__init__()
+        assert mode in ['feature_extractor', 'partial_model']
         self.conv1 = conv1
         self.class_embedding = class_embedding
         self.positional_embedding = positional_embedding
@@ -158,17 +160,24 @@ class PartialViT(nn.Module):
         self.transformer_encoder = transformer_encoder
         self.ln_post = ln_post
         self.proj = proj
-        if self.conv1 is not None:
-            assert self.class_embedding is not None
-            assert self.positional_embedding is not None
-        if self.class_embedding is not None or self.positional_embedding is not None:
-            assert self.ln_pre is not None
-        if self.ln_pre is not None:
-            assert self.transformer_encoder is not None
-        if self.transformer_encoder is not None:
-            assert self.ln_post is not None
-        if self.ln_post is not None:
-            assert self.proj is not None
+        if mode == 'partial_model':
+            if self.conv1 is not None:
+                assert self.ln_pre is not None
+            if self.ln_pre is not None:
+                assert self.transformer_encoder is not None
+            if self.transformer_encoder is not None:
+                assert self.ln_post is not None
+            if self.ln_post is not None:
+                assert self.proj is not None
+        elif mode == 'feature_extractor':
+            if self.proj is not None:
+                assert self.ln_post is not None
+            if self.ln_post is not None:
+                assert self.transformer_encoder is not None
+            if self.transformer_encoder is not None:
+                assert self.ln_pre is not None
+            if self.ln_pre is not None:
+                assert self.conv1 is not None
     
     def forward(self, x):
         if self.conv1 is not None:
@@ -211,14 +220,15 @@ def get_split_vit(model, layer_idx=0):
 
     if layer_idx == -1:
         # finetune all layers
-        feature_extractor = PartialViT()
+        feature_extractor = PartialViT(mode='feature_extractor')
         partial_model = PartialViT(conv1=conv1,
                                    class_embedding=class_embedding,
                                    positional_embedding=positional_embedding,
                                    ln_pre=ln_pre,
                                    transformer_encoder=transformer,
                                    ln_post=ln_post,
-                                   proj=proj)
+                                   proj=proj,
+                                   mode='partial_model')
     elif layer_idx == 0:
         # finetune no layers
         feature_extractor = PartialViT(conv1=conv1,
@@ -227,8 +237,9 @@ def get_split_vit(model, layer_idx=0):
                                        ln_pre=ln_pre,
                                        transformer_encoder=transformer,
                                        ln_post=ln_post,
-                                       proj=proj)
-        partial_model = PartialViT()
+                                       proj=proj,
+                                       mode='feature_extractor')
+        partial_model = PartialViT(mode='partial_model')
     else:
         # finetune some layers
         transformer_encoder = transformer.resblocks[:layer_idx]
@@ -237,10 +248,12 @@ def get_split_vit(model, layer_idx=0):
                                        class_embedding=class_embedding,
                                        positional_embedding=positional_embedding,
                                        ln_pre=ln_pre,
-                                       transformer_encoder=transformer_encoder)
+                                       transformer_encoder=transformer_encoder,
+                                       mode='feature_extractor')
         partial_model = PartialViT(transformer_encoder=partial_transformer,
                                    ln_post=ln_post,
-                                   proj=proj)
+                                   proj=proj,
+                                   mode='partial_model')
     feature_extractor.eval()
     partial_model.train()
     return Encoder(feature_extractor, partial_model)
@@ -257,8 +270,10 @@ class PartialResNet(nn.Module):
                        layer2=None,
                        layer3=None,
                        layer4=None,
-                       attnpool=None):
+                       attnpool=None,
+                       mode='feature_extractor'):
         super().__init__()
+        assert mode in ['feature_extractor', 'partial_model']
         self.conv1 = conv1
         self.bn1 = bn1
         self.conv2 = conv2
@@ -273,27 +288,49 @@ class PartialResNet(nn.Module):
         self.layer4 = layer4
         self.attnpool = attnpool
         self.apply_stem = self.conv3 != None
-        if self.conv1 is not None:
-            assert self.bn1 is not None
-        if self.bn1 is not None:
-            assert self.conv2 is not None
-        if self.conv2 is not None:
-            assert self.bn2 is not None
-        if self.bn2 is not None:
-            assert self.conv3 is not None
-        if self.conv3 is not None:
-            assert self.conv1 is not None  # make sure entire stem is included
-            assert self.bn3 is not None
-        if self.bn3 is not None:
-            assert self.layer1 is not None
-        if self.layer1 is not None:
-            assert self.layer2 is not None
-        if self.layer2 is not None:
-            assert self.layer3 is not None
-        if self.layer3 is not None:
-            assert self.layer4 is not None
-        if self.layer4 is not None:
-            assert self.attnpool is not None
+        if mode == 'partial_model':
+            if self.conv1 is not None:
+                assert self.bn1 is not None
+            if self.bn1 is not None:
+                assert self.conv2 is not None
+            if self.conv2 is not None:
+                assert self.bn2 is not None
+            if self.bn2 is not None:
+                assert self.conv3 is not None
+            if self.conv3 is not None:
+                assert self.conv1 is not None  # make sure entire stem is included
+                assert self.bn3 is not None
+            if self.bn3 is not None:
+                assert self.layer1 is not None
+            if self.layer1 is not None:
+                assert self.layer2 is not None
+            if self.layer2 is not None:
+                assert self.layer3 is not None
+            if self.layer3 is not None:
+                assert self.layer4 is not None
+            if self.layer4 is not None:
+                assert self.attnpool is not None
+        elif mode == 'feature_extractor':
+            if self.attnpool is not None:
+                assert self.layer4 is not None
+            if self.layer4 is not None:
+                assert self.layer3 is not None
+            if self.layer3 is not None:
+                assert self.layer2 is not None
+            if self.layer2 is not None:
+                assert self.layer1 is not None
+            if self.layer1 is not None:
+                assert self.bn3 is not None
+            if self.bn3 is not None:
+                assert self.conv3 is not None
+            if self.conv3 is not None:
+                assert self.bn2 is not None
+            if self.bn2 is not None:
+                assert self.conv2 is not None
+            if self.conv2 is not None:
+                assert self.bn1 is not None
+            if self.bn1 is not None:
+                assert self.conv1 is not None
 
     def forward(self, x):
         if self.apply_stem:
@@ -325,8 +362,8 @@ def get_split_resnet(model, layer_idx=0):
     bn2 = model.bn2
     conv3 = model.conv3
     bn3 = model.bn3
-    avgpool = nn.AvgPool2d(2)
-    relu = nn.ReLU(inplace=True)
+    avgpool = model.avgpool
+    relu = model.relu
 
     layer1 = model.layer1
     layer2 = model.layer2
@@ -337,7 +374,7 @@ def get_split_resnet(model, layer_idx=0):
 
     if layer_idx == -1:
         # finetune all layers
-        feature_extractor = PartialResNet()
+        feature_extractor = PartialResNet(mode='feature_extractor')
         partial_model = PartialResNet(conv1=conv1,
                                       bn1=bn1,
                                       conv2=conv2,
@@ -348,7 +385,8 @@ def get_split_resnet(model, layer_idx=0):
                                       layer2=layer2,
                                       layer3=layer3,
                                       layer4=layer4,
-                                      attnpool=attnpool)
+                                      attnpool=attnpool,
+                                      mode='partial_model')
     elif layer_idx == 0:
         # finetune no layers
         feature_extractor = PartialResNet(conv1=conv1,
@@ -361,8 +399,9 @@ def get_split_resnet(model, layer_idx=0):
                                           layer2=layer2,
                                           layer3=layer3,
                                           layer4=layer4,
-                                          attnpool=attnpool)
-        partial_model = PartialResNet()
+                                          attnpool=attnpool,
+                                          mode='feature_extractor')
+        partial_model = PartialResNet(mode='partial_model')
     elif layer_idx == 1:
         # finetune attention pool
         feature_extractor = PartialResNet(conv1=conv1,
@@ -374,8 +413,10 @@ def get_split_resnet(model, layer_idx=0):
                                           layer1=layer1,
                                           layer2=layer2,
                                           layer3=layer3,
-                                          layer4=layer4)
-        partial_model = PartialResNet(attnpool=attnpool)
+                                          layer4=layer4,
+                                          mode='feature_extractor')
+        partial_model = PartialResNet(attnpool=attnpool,
+                                      mode='partial_model')
     elif layer_idx == 2:
         # finetune attnpool and layer4
         feature_extractor = PartialResNet(conv1=conv1,
@@ -386,9 +427,11 @@ def get_split_resnet(model, layer_idx=0):
                                           bn3=bn3,
                                           layer1=layer1,
                                           layer2=layer2,
-                                          layer3=layer3)
+                                          layer3=layer3,
+                                          mode='feature_extractor')
         partial_model = PartialResNet(layer4=layer4,
-                                      attnpool=attnpool)
+                                      attnpool=attnpool,
+                                      mode='partial_model')
     else:
         raise ValueError("Invalid layer index")
     
@@ -402,7 +445,8 @@ def get_image_encoder(cfg, clip_model):
     if cfg.FEATURE.BACKBONE == "RN50":
         assert type(clip_model.visual) == ModifiedResNet
         return get_split_resnet(clip_model.visual, cfg.FEATURE.LAYER_IDX)
-    elif cfg.FEATURE.BACKBONE == "ViT-B/32":
+    elif cfg.FEATURE.BACKBONE == "ViT-B/16":
         assert type(clip_model.visual) == VisionTransformer
         return get_split_vit(clip_model.visual, cfg.FEATURE.LAYER_IDX)
-    raise NotImplementedError()
+    else:
+        raise NotImplementedError()

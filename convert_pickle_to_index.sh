@@ -1,7 +1,8 @@
 #!/bin/bash
 
 
-for DATASET in caltech101 dtd eurosat fgvc_aircraft food101 oxford_flowers oxford_pets stanford_cars sun397 ucf101
+# for DATASET in caltech101 dtd eurosat fgvc_aircraft food101 oxford_flowers oxford_pets stanford_cars sun397 ucf101
+for DATASET in oxford_flowers
 do
     for SHOTS in 1 2 4 8 16
     do 
