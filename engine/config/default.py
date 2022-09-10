@@ -34,20 +34,28 @@ _C.DATASET.NUM_SHOTS = 16
 _C.DATASET.MAX_VAL_SHOTS = 4
 
 ###########################
-# Feature Extraction Config 
-# (need to consider transform/backbone in later parts)
+# (Image) Feature Extraction Config 
+# (need to specify transform in _C.INPUT)
 ###########################
 _C.FEATURE = CN()
-# FEATURE name, must be UNIQUE for each config
-_C.FEATURE.NAME = ""
 # Number of views per train image
 _C.FEATURE.VIEWS_PER_TRAIN = 1
 # Number of views per val image
 _C.FEATURE.VIEWS_PER_VAL = 1
 # Which layer to extract features from. 0 if extracting from last layer output
 _C.FEATURE.LAYER_IDX = 0
+
+# Image Backbone for CLIP
+_C.FEATURE.BACKBONE = ""
+
+###########################
+# (Text) Feature Extraction Config 
+###########################
+_C.TEXT_FEATURE = CN()
+# Which layer to extract features from. 0 if extracting from last layer output
+_C.TEXT_FEATURE.LAYER_IDX = 0
 # Templates to use (defined in engine/template/default.py)
-_C.FEATURE.TEMPLATE = "default"
+_C.TEXT_FEATURE.TEMPLATE = "default"
 
 # TODO: Remove irrelevant configs
 ###########################
@@ -107,23 +115,6 @@ _C.DATALOADER = CN()
 _C.DATALOADER.NUM_WORKERS = 4
 _C.DATALOADER.BATCH_SIZE = 32
 _C.DATALOADER.TEST_BATCH_SIZE = 32
-
-###########################
-# Model
-###########################
-_C.MODEL = CN()
-_C.MODEL.BACKBONE = ""
-# Definition of embedding layers
-_C.MODEL.HEAD = CN()
-# If none, do not construct embedding layers, the
-# backbone's output will be passed to the classifier
-_C.MODEL.HEAD.NAME = ""
-# Structure of hidden layers (a list), e.g. [512, 512]
-# If undefined, no embedding layer will be constructed
-_C.MODEL.HEAD.HIDDEN_LAYERS = ()
-_C.MODEL.HEAD.ACTIVATION = "relu"
-_C.MODEL.HEAD.BN = True
-_C.MODEL.HEAD.DROPOUT = 0.0
 
 ###########################
 # Optimization

@@ -45,13 +45,16 @@ python split_for_few_shot.py --dataset-config-file config/datasets/imagenet.yaml
 ```
 
 ## Feature Extraction
-You may use [features.py](features.py) to extract image and text features from a frozen CLIP model. You may specify the configuration for feature extraction in a yaml file, such as [config/features/rn50_view_1_ccrop_template_default.yaml](config/features/rn50_view_1_ccrop_template_default.yaml), then run:
+You may use [features.py](features.py) to extract image and text features from a frozen CLIP model. You may specify the configuration for feature extraction in 4 yaml files. For example, run:
 
 ```
-python split_for_few_shot.py \
+python features.py \
     --dataset-config-file config/datasets/imagenet.yaml \
     --few-shot-config-file config/few_shot/shot_1.yaml \
-    --features-config-file config/features/rn50_view_1_ccrop_template_default.yaml \
+    --image-encoder-config-file config/features/image/rn50_layer_0.yaml \
+    --text-encoder-config-file layer_0.yaml \
+    --template-config-file config/features/template/single.yaml \
+    --view-config-file config/features/view/view_1_ccrop.yaml \
     SEED 1
 ```
 

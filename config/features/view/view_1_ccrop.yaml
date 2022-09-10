@@ -1,0 +1,6 @@
+FEATURE:
+  VIEWS_PER_TRAIN: 1
+  VIEWS_PER_VAL: 1
+
+INPUT:
+  TRANSFORMS: ["center_crop", "normalize"]

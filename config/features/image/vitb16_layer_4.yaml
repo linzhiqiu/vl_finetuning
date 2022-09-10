@@ -1,0 +1,3 @@
+FEATURE:
+  LAYER_IDX: 4
+  BACKBONE: "ViT-B/16"

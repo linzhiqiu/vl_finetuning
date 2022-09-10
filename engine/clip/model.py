@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import pdb
 from typing import Tuple, Union
 
 import numpy as np
@@ -212,7 +213,7 @@ class VisionTransformer(nn.Module):
         self.ln_pre = LayerNorm(width)
 
         self.transformer = Transformer(width, layers, heads)
-
+        
         self.ln_post = LayerNorm(width)
         self.proj = nn.Parameter(scale * torch.randn(width, output_dim))
 
@@ -232,7 +233,7 @@ class VisionTransformer(nn.Module):
 
         if self.proj is not None:
             x = x @ self.proj
-
+        
         return x
 
 
@@ -337,6 +338,7 @@ class CLIP(nn.Module):
         return self.visual(image.type(self.dtype))
 
     def encode_text(self, text):
+        pdb
         x = self.token_embedding(text).type(self.dtype)  # [batch_size, n_ctx, d_model]
 
         x = x + self.positional_embedding.type(self.dtype)
@@ -394,7 +396,6 @@ def convert_weights(model: nn.Module):
 
 def build_model(state_dict: dict):
     vit = "visual.proj" in state_dict
-
     if vit:
         vision_width = state_dict["visual.conv1.weight"].shape[0]
         vision_layers = len([k for k in state_dict.keys() if k.startswith("visual.") and k.endswith(".attn.in_proj_weight")])
