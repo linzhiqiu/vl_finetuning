@@ -57,9 +57,8 @@ _C.TEXT_FEATURE.LAYER_IDX = 0
 # Templates to use (defined in engine/template/default.py)
 _C.TEXT_FEATURE.TEMPLATE = "default"
 
-# TODO: Remove irrelevant configs
 ###########################
-# Config definition
+# System definition
 ###########################
 
 _C.USE_CUDA = True
@@ -113,9 +112,14 @@ _C.INPUT.GB_K = 21  # kernel size (should be an odd number)
 ###########################
 _C.DATALOADER = CN()
 _C.DATALOADER.NUM_WORKERS = 4
-_C.DATALOADER.BATCH_SIZE = 32
 _C.DATALOADER.TEST_BATCH_SIZE = 32
 
+###########################
+# Trainer
+###########################
+
+_C.DATALOADER.BATCH_SIZE = 32
+# TODO: Remove irrelevant configs
 ###########################
 # Optimization
 ###########################

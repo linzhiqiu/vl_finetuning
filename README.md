@@ -51,7 +51,7 @@ You may use [features.py](features.py) to extract image and text features from a
 python features.py \
     --dataset-config-file config/datasets/dtd.yaml \
     --few-shot-config-file config/few_shot/shot_1.yaml \
-    --image-encoder-config-file config/features/image/vitb16_layer_1.yaml \
+    --image-encoder-config-file config/features/image/vitb16_layer_all.yaml \
     --text-encoder-config-file config/features/text/layer_0.yaml \
     --template-config-file config/features/template/single.yaml \
     --view-config-file config/features/view/view_1_ccrop.yaml \
@@ -63,6 +63,9 @@ Or you can quickly extract features for multiple configuration yaml files via [f
 ```
 bash features.sh
 ```
+
+## Trainer
+To perform logistic regression training.
 
 <!-- ## How to Run
 

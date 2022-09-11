@@ -14,7 +14,7 @@ def get_image_encoder_dir(cfg):
     image_encoder_path = os.path.join(
         cfg.FEATURE_DIR,
         'image',
-        "_".join([cfg.FEATURE.BACKBONE, str(cfg.FEATURE.LAYER_IDX)]))
+        "_".join([cfg.FEATURE.BACKBONE.replace("/", "-"), str(cfg.FEATURE.LAYER_IDX)]))
     return image_encoder_path
 
 
@@ -35,7 +35,7 @@ def get_text_encoder_dir(cfg):
     text_encoder_path = os.path.join(
         cfg.FEATURE_DIR,
         'text',
-        "_".join([cfg.FEATURE.BACKBONE, str(cfg.TEXT_FEATURE.LAYER_IDX)]),)
+        "_".join([cfg.FEATURE.BACKBONE.replace("/", "-"), str(cfg.TEXT_FEATURE.LAYER_IDX)]),)
     return text_encoder_path
 
 
