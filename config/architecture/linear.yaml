@@ -1,0 +1,3 @@
+ARCHITECTURE:
+  HEAD: "linear"
+  BIAS: False

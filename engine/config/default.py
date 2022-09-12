@@ -11,8 +11,8 @@ _C.DATA_DIR = "./data"
 _C.FEW_SHOT_DIR = "./indices"
 # Directory to save the extracted features/layers (feature.py)
 _C.FEATURE_DIR = f"./features"
-# Directory to save the trained linear/non-linear models (train.py)
-_C.TRAINER_DIR = f"./trained_models"
+# Directory to save the trained linear/non-linear models (logreg_minibatch.py)
+_C.LOGREG_MINIBATCH_DIR = f"./logreg_minibatch"
 # Directory to save the evaluation results (eval.py)
 _C.EVAL_DIR = f"./eval"
 
@@ -108,58 +108,69 @@ _C.INPUT.GB_P = 0.5  # propability of applying this operation
 _C.INPUT.GB_K = 21  # kernel size (should be an odd number)
 
 ###########################
-# Dataloader
+# Dataloader (For feature extraction)
 ###########################
 _C.DATALOADER = CN()
 _C.DATALOADER.NUM_WORKERS = 4
 _C.DATALOADER.TEST_BATCH_SIZE = 32
 
 ###########################
-# Trainer
+# Architecture (for mini-batch logistic regression)
 ###########################
+_C.ARCHITECTURE = CN()
+_C.ARCHITECTURE.HEAD = "linear"
+_C.ARCHITECTURE.BIAS = False
 
-_C.DATALOADER.BATCH_SIZE = 32
-# TODO: Remove irrelevant configs
 ###########################
-# Optimization
+# Modality (for mini-batch logistic regression)
+###########################
+_C.MODALITY = CN()
+_C.MODALITY.TEXT_BATCH_RATIO = 0.5
+
+###########################
+# Logit calculation (during mini-batch logistic regression training)
+###########################
+_C.LOGIT = CN()
+_C.LOGIT.FEATURE_NORM = False
+_C.LOGIT.HEAD_NORM = False
+_C.LOGIT.USE_LOGIT_SCALE = False
+
+###########################
+# Optimization (for mini-batch logistic regression)
 ###########################
 _C.OPTIM = CN()
-_C.OPTIM.NAME = "adam"
-_C.OPTIM.LR = 0.0003
-_C.OPTIM.WEIGHT_DECAY = 5e-4
+_C.OPTIM.NAME = "adamw"
+# Total iter is MAX_ITER + WARMUP_ITER
+_C.OPTIM.MAX_ITER = [12800]
+_C.OPTIM.BATCH_SIZE = [32]
+_C.OPTIM.LR = [0.0003]
+_C.OPTIM.WEIGHT_DECAY = [0.0]
 _C.OPTIM.MOMENTUM = 0.9
-_C.OPTIM.SGD_DAMPNING = 0
+# _C.OPTIM.SGD_DAMPNING = 0
 _C.OPTIM.SGD_NESTEROV = False
-_C.OPTIM.RMSPROP_ALPHA = 0.99
 # The following also apply to other
 # adaptive optimizers like adamw
 _C.OPTIM.ADAM_BETA1 = 0.9
 _C.OPTIM.ADAM_BETA2 = 0.999
-# STAGED_LR allows different layers to have
-# different lr, e.g. pre-trained base layers
-# can be assigned a smaller lr than the new
-# classification layer
-_C.OPTIM.STAGED_LR = False
-_C.OPTIM.NEW_LAYERS = ()
-_C.OPTIM.BASE_LR_MULT = 0.1
+# # STAGED_LR allows different layers to have
+# # different lr, e.g. pre-trained base layers
+# # can be assigned a smaller lr than the new
+# # classification layer
+# _C.OPTIM.STAGED_LR = False
+# _C.OPTIM.NEW_LAYERS = ()
+# _C.OPTIM.BASE_LR_MULT = 0.1
 # Learning rate scheduler
-_C.OPTIM.LR_SCHEDULER = "single_step"
-# -1 or 0 means the stepsize is equal to max_epoch
-_C.OPTIM.STEPSIZE = (-1, )
-_C.OPTIM.GAMMA = 0.1
-_C.OPTIM.MAX_EPOCH = 10
-# Set WARMUP_EPOCH larger than 0 to activate warmup training
-_C.OPTIM.WARMUP_EPOCH = -1
+_C.OPTIM.LR_SCHEDULER = "cosine"
+# Set WARMUP_ITER larger than 0 to activate warmup training
+_C.OPTIM.WARMUP_ITER = 0
 # Either linear or constant
 _C.OPTIM.WARMUP_TYPE = "linear"
 # Constant learning rate when type=constant
 _C.OPTIM.WARMUP_CONS_LR = 1e-5
 # Minimum learning rate when type=linear
 _C.OPTIM.WARMUP_MIN_LR = 1e-5
-# Recount epoch for the next scheduler (last_epoch=-1)
-# Otherwise last_epoch=warmup_epoch
-_C.OPTIM.WARMUP_RECOUNT = True
 
+# TODO: Remove irrelevant configs
 ###########################
 # Train
 ###########################

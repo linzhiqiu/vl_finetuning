@@ -3,78 +3,93 @@ import torch
 
 from engine.tools.utils import makedirs, set_random_seed, collect_env_info
 from engine.config import get_cfg_default
-from engine.transforms.default import build_transform
-from engine.datasets.utils import DatasetWrapper, get_few_shot_benchmark
-from engine.templates import get_templates
-from engine import clip
-from engine.clip import partial_model
+from engine.datasets.utils import TensorDataset
+
+def get_benchmark_name(cfg):
+    benchmark_name = f"{cfg.DATASET.NAME}-{cfg.DATASET.NUM_SHOTS}shot-{cfg.SEED}seed"
+    return benchmark_name
+
+def get_save_dir(cfg):
+    save_dir = os.path.join(
+        cfg.LOGREG_MINIBATCH_DIR,
+        cfg.DATASET.NAME,
+        cfg.FEATURE.BACKBONE.replace("/", "-"),
+        cfg.TEXT_FEATURE.TEMPLATE,
+        cfg.VIEW.AUGMENTATION,
+        cfg.CROSS_MODAL.MODEL,
+        cfg.LOGIT.MODEL,
+        f"seed_{cfg.SEED}",
+
+        # Dataset name
+        _C.DATASET.NAME=""
+        # Number of images per class
+        _C.DATASET.NUM_SHOTS=16
+        # Maximum size of val shots (otherwise same size as train shots)
+        _C.DATASET.MAX_VAL_SHOTS=4
+        # Number of views per train image
+        _C.FEATURE.VIEWS_PER_TRAIN=1
+        # Number of views per val image
+        _C.FEATURE.VIEWS_PER_VAL=1
+        # Which layer to extract features from. 0 if extracting from last layer output
+        _C.FEATURE.LAYER_IDX=0
+        # Image Backbone for CLIP
+        _C.FEATURE.BACKBONE=""
+        # Which layer to extract features from. 0 if extracting from last layer output
+        _C.TEXT_FEATURE.LAYER_IDX=0
+        # Templates to use (defined in engine/template/default.py)
+        _C.TEXT_FEATURE.TEMPLATE="default"
+
+        ###########################
+        # Architecture (for mini-batch logistic regression)
+        ###########################
+        _C.ARCHITECTURE=CN()
+        _C.ARCHITECTURE.HEAD="linear"
+        _C.ARCHITECTURE.BIAS=False
+
+        ###########################
+        # Modality (for mini-batch logistic regression)
+        ###########################
+        _C.MODALITY=CN()
+        _C.MODALITY.TEXT_BATCH_RATIO=0.5
+
+        ###########################
+        # Logit calculation (during mini-batch logistic regression training)
+        ###########################
+        _C.LOGIT=CN()
+        _C.LOGIT.FEATURE_NORM=False
+        _C.LOGIT.HEAD_NORM=False
+        _C.LOGIT.USE_LOGIT_SCALE=False
+
+        _C.OPTIM.NAME="adamw"
+        # Total iter is MAX_ITER + WARMUP_ITER
+        _C.OPTIM.MAX_ITER=[12800]
+        _C.OPTIM.BATCH_SIZE=[32]
+        _C.OPTIM.LR=[0.0003]
+        _C.OPTIM.WEIGHT_DECAY=[0.0]
 
 
-def get_backbone_name(cfg):
-    return cfg.FEATURE.BACKBONE.replace("/", "-")
 
-
-def get_image_encoder_name(cfg):
-    return "_".join([get_backbone_name(cfg), str(cfg.FEATURE.LAYER_IDX)])
-
-
-def get_text_encoder_name(cfg):
-    return "_".join([get_backbone_name(cfg), str(cfg.TEXT_FEATURE.LAYER_IDX)])
-
-
-def get_few_shot_setup_name(cfg):
-    return f"shot_{cfg.DATASET.NUM_SHOTS}_seed_{cfg.SEED}"
-
-
-transforms_dict = {
-    'rcrop' : ['random_resized_crop', 'random_flip', 'normalize'],
-    'ccrop' : ['center_crop', 'normalize']
-}
-def get_transform_name(cfg):
-    for transform_name, transform_list in transforms_dict.items():
-        if len(cfg.INPUT.TRANSFORMS) == len(transform_list):
-            is_equal = True
-            for i, transform in enumerate(cfg.INPUT.TRANSFORMS):
-                if transform != transform_list[i]:
-                    is_equal = False
-                    break
-            if is_equal:
-                return transform_name
-    raise ValueError(f"Transforms {cfg.INPUT.TRANSFORMS} not found in transforms_dict")
-
-
-def get_view_name(cfg):
-    name = f"view_{cfg.FEATURE.VIEWS_PER_TRAIN}"
-    if cfg.FEATURE.VIEWS_PER_VAL > 1:
-        name += f"_valview_{cfg.FEATURE.VIEWS_PER_VAL}"
-    name += f"_{get_transform_name(cfg)}"
-    return name
-
+    )
+    return save_dir
 
 def get_image_encoder_dir(cfg):
     image_encoder_path = os.path.join(
         cfg.FEATURE_DIR,
         'image',
-        get_image_encoder_name(cfg)
-    )
+        "_".join([cfg.FEATURE.BACKBONE.replace("/", "-"), str(cfg.FEATURE.LAYER_IDX)]))
     return image_encoder_path
 
 
 def get_image_features_path(cfg):
     image_features_path = os.path.join(
-        get_image_encoder_dir(cfg),
-        cfg.DATASET.NAME,
-        get_view_name(cfg),
-        f"{get_few_shot_setup_name(cfg)}.pth")
+        get_image_encoder_dir(cfg), cfg.DATASET.NAME,
+        f"shot_{cfg.DATASET.NUM_SHOTS}-seed_{cfg.SEED}.pth")
     return image_features_path
 
 
 def get_test_features_path(cfg):
     test_features_path = os.path.join(
-        get_image_encoder_dir(cfg),
-        cfg.DATASET.NAME,
-        "test.pth"
-    )
+        get_image_encoder_dir(cfg), cfg.DATASET.NAME, "test.pth")
     return test_features_path
 
 
@@ -82,16 +97,14 @@ def get_text_encoder_dir(cfg):
     text_encoder_path = os.path.join(
         cfg.FEATURE_DIR,
         'text',
-        get_text_encoder_name(cfg)
-    )
+        "_".join([cfg.FEATURE.BACKBONE.replace("/", "-"), str(cfg.TEXT_FEATURE.LAYER_IDX)]),)
     return text_encoder_path
 
 
 def get_text_features_path(cfg):
     text_features_path = os.path.join(
-        get_text_encoder_dir(cfg),
-        cfg.DATASET.NAME,
-        f"{cfg.TEXT_FEATURE.TEMPLATE}.pth")
+        get_text_encoder_dir(cfg), cfg.DATASET.NAME,
+        cfg.TEXT_FEATURE.TEMPLATE + ".pth")
     return text_features_path
 
 
@@ -121,8 +134,20 @@ def setup_cfg(args):
     # 6. From the augmentation view config file
     if args.view_config_file:
         cfg.merge_from_file(args.view_config_file)
+    
+    # 7. From the cross-modal config file
+    if args.cross_modal_config_file:
+        cfg.merge_from_file(args.cross_modal_config_file)
+    
+    # 8. From the logit config file
+    if args.logit_config_file:
+        cfg.merge_from_file(args.logit_config_file)
+    
+    # 9. From the hyperparams config file
+    if args.hyperparams_config_file:
+        cfg.merge_from_file(args.hyperparams_config_file)
 
-    # 7. Add configs from input arguments
+    # 10. Add configs from input arguments
     cfg.merge_from_list(args.opts)
 
     cfg.freeze()
@@ -370,6 +395,24 @@ if __name__ == "__main__":
         type=str,
         default="",
         help="path to config file for image augmentation views",
+    )
+    parser.add_argument(
+        "--cross-modal-config-file",
+        type=str,
+        default="",
+        help="path to config file for cross-modal training",
+    )
+    parser.add_argument(
+        "--logit-config-file",
+        type=str,
+        default="",
+        help="path to config file for logit calculation",
+    )
+    parser.add_argument(
+        "--hyperparams-config-file",
+        type=str,
+        default="",
+        help="path to config file for hyperparams",
     )
     parser.add_argument(
         "opts",

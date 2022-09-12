@@ -29,7 +29,7 @@ declare -a DATASETS=(
                      "oxford_flowers"
                      "oxford_pets"
                      "stanford_cars"
-                     "sun397" 
+                     "sun397"
                      "ucf101" 
                      )
     

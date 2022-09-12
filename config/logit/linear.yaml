@@ -1,0 +1,4 @@
+LOGIT:
+  FEATURE_NORM: False
+  HEAD_NORM: False
+  USE_LOGIT_SCALE: False
