@@ -165,48 +165,29 @@ _C.OPTIM.LR_SCHEDULER = "cosine"
 _C.OPTIM.WARMUP_ITER = 0
 # Either linear or constant
 _C.OPTIM.WARMUP_TYPE = "linear"
-# Constant learning rate when type=constant
-_C.OPTIM.WARMUP_CONS_LR = 1e-5
-# Minimum learning rate when type=linear
+# WARMUP learning rate when type=linear/constant
 _C.OPTIM.WARMUP_MIN_LR = 1e-5
+# Evaluation on val set every EVAL_FREQ iters
+_C.OPTIM.EVAL_FREQ = 100
 
-# TODO: Remove irrelevant configs
-###########################
-# Train
-###########################
-_C.TRAIN = CN()
-# How often (epoch) to save model during training
-# Set to 0 or negative value to only save the last one
-_C.TRAIN.CHECKPOINT_FREQ = 0
-# How often (batch) to print training information
-_C.TRAIN.PRINT_FREQ = 10
-# Use 'train_x', 'train_u' or 'smaller_one' to count
-# the number of iterations in an epoch (for DA and SSL)
-_C.TRAIN.COUNT_ITER = "train_x"
 
-###########################
-# Test
-###########################
-_C.TEST = CN()
-_C.TEST.EVALUATOR = "Classification"
-_C.TEST.PER_CLASS_RESULT = False
-# Compute confusion matrix, which will be saved
-# to $OUTPUT_DIR/cmat.pt
-_C.TEST.COMPUTE_CMAT = False
-# If NO_TEST=True, no testing will be conducted
-_C.TEST.NO_TEST = False
-# Use test or val set for FINAL evaluation
-_C.TEST.SPLIT = "test"
-# Which model to test after training (last_step or best_val)
-# If best_val, evaluation is done every epoch (if val data
-# is unavailable, test data will be used)
-_C.TEST.FINAL_MODEL = "last_step"
-
-###########################
-# Trainer specifics
-###########################
-_C.TRAINER = CN()
-_C.TRAINER.NAME = ""
+# ###########################
+# # Test
+# ###########################
+# _C.TEST = CN()
+# _C.TEST.EVALUATOR = "Classification"
+# _C.TEST.PER_CLASS_RESULT = False
+# # Compute confusion matrix, which will be saved
+# # to $OUTPUT_DIR/cmat.pt
+# _C.TEST.COMPUTE_CMAT = False
+# # If NO_TEST=True, no testing will be conducted
+# _C.TEST.NO_TEST = False
+# # Use test or val set for FINAL evaluation
+# _C.TEST.SPLIT = "test"
+# # Which model to test after training (last_step or best_val)
+# # If best_val, evaluation is done every epoch (if val data
+# # is unavailable, test data will be used)
+# _C.TEST.FINAL_MODEL = "last_step"
 
 
 def get_cfg_default():

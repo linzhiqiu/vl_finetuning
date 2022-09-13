@@ -138,7 +138,6 @@ def extract_text_features(cfg, text_encoder, lab2cname):
         'eot_indices': None,
         'prompts': {},
         'lab2cname': lab2cname,
-        'partial_model': None,
     }
     templates = get_templates(cfg.DATASET.NAME, cfg.TEXT_FEATURE.TEMPLATE)
     text_encoder.feature_extractor.eval()
@@ -256,7 +255,6 @@ def main(args):
             'labels': torch.Tensor(),
             'prompts': [],
             'classnames': [],
-            'partial_model': None,
         }
         print(f"Extracting features for texts ...")
         text_features = extract_text_features(

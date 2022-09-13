@@ -86,17 +86,21 @@ def build_lr_scheduler(optimizer,
                        warmup_iter,
                        max_iter,
                        warmup_type=None,
-                       warmup_lr=None):
+                       warmup_lr=None,
+                       verbose=False):
     """A function wrapper for building a learning rate scheduler.
 
     Args:
         optimizer (Optimizer): an Optimizer.
         lr_scheduler (str): learning rate scheduler name, either "cosine" or "linear".
-        warmup_type (str): warmup type, either constant or linear.
-        warmup_iter (int): warmup iteration (not count in max_iter)
+        warmup_iter (int): number of warmup iterations.
         max_iter (int): maximum iteration (not including warmup iter).
+        warmup_type (str): warmup type, either constant or linear.
+        warmup_lr (float): warmup learning rate.
+        verbose (bool): If ``True``, prints a message to stdout
     """
-    print(f"Building scheduler: {lr_scheduler} with warmup: {warmup_type}")
+    if verbose:
+        print(f"Building scheduler: {lr_scheduler} with warmup: {warmup_type}")
 
     if lr_scheduler not in AVAI_SCHEDS:
         raise ValueError(

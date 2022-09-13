@@ -1,10 +1,16 @@
 #!/bin/bash
 
-declare -a IMAGES=("rn50_layer_0" "vitb16_layer_0" 
-                  "rn50_layer_1" "vitb16_layer_1"
-                  "rn50_layer_2" "vitb16_layer_2"
-                  "vitb16_layer_4"
-                  "rn50_layer_all" "vitb16_layer_all")
+declare -a IMAGES=(
+                   "rn50_layer_0"
+                   "vitb16_layer_0" 
+                   "rn50_layer_1"
+                   "vitb16_layer_1"
+                   "rn50_layer_2"
+                   "vitb16_layer_2"
+                   "vitb16_layer_4"
+                   "rn50_layer_all"
+                   "vitb16_layer_all"
+                )
 
 declare -a TEXTS=(
                   "layer_0" 
@@ -12,12 +18,18 @@ declare -a TEXTS=(
                 #   "layer_all"
                   )
 
-declare -a TEMPLATES=("classname" "default" 
-                      "extra" "single")
+declare -a TEMPLATES=(
+                      "classname"
+                      "default" 
+                      "extra"
+                      "single"
+                     )
 
-declare -a VIEWS=("view_1_ccrop"
+declare -a VIEWS=(
+                  "view_1_ccrop"
                   "view_100_rcrop"
-                  "view_100_valview_100_rcrop")
+                  "view_100_valview_100_rcrop"
+                 )
                   
 declare -a DATASETS=(
                      "imagenet"

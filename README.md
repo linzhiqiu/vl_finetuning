@@ -64,8 +64,29 @@ Or you can quickly extract features for multiple configuration yaml files via [f
 bash features.sh
 ```
 
-## Trainer
-To perform logistic regression training.
+# Training
+
+## Mini-Batch Logistic Regression
+
+```
+python logreg_minibatch.py \
+    --dataset-config-file config/datasets/imagenet.yaml \
+    --few-shot-config-file config/few_shot/shot_16.yaml \
+    --image-encoder-config-file config/features/image/rn50_layer_0.yaml \
+    --text-encoder-config-file config/features/text/layer_0.yaml \
+    --template-config-file config/features/template/single.yaml \
+    --view-config-file config/features/view/view_1_ccrop.yaml \
+    --cross-modal-config-file config/cross_modal/text_ratio_0.yaml \
+    --logit-config-file config/logit/linear.yaml \
+    --hyperparams-config-file config/hyperparams/logreg_minibatch/adamw.yaml \
+    --architecture-config-file config/architecture/linear.yaml \
+    SEED 1
+```
+
+
+```
+bash logreg_minibatch.sh
+```
 
 <!-- ## How to Run
 

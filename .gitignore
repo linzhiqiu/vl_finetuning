@@ -3,7 +3,7 @@
 
 # Output folders
 /features/
-/trained_models/
+/logreg_minibatch/
 /eval/
 
 # ImageNet train/val/test split file
