@@ -4,6 +4,7 @@
 # Output folders
 /features/
 /logreg_minibatch/
+/logreg_fullbatch/
 /eval/
 
 # ImageNet train/val/test split file

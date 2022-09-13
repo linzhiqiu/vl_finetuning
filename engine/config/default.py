@@ -13,6 +13,8 @@ _C.FEW_SHOT_DIR = "./indices"
 _C.FEATURE_DIR = f"./features"
 # Directory to save the trained linear/non-linear models (logreg_minibatch.py)
 _C.LOGREG_MINIBATCH_DIR = f"./logreg_minibatch"
+# Directory to save the trained linear/non-linear models (logreg_fullbatch.py)
+_C.LOGREG_FULLBATCH_DIR = f"./logreg_fullbatch"
 # Directory to save the evaluation results (eval.py)
 _C.EVAL_DIR = f"./eval"
 
@@ -170,6 +172,15 @@ _C.OPTIM.WARMUP_MIN_LR = 1e-5
 # Evaluation on val set every EVAL_FREQ iters
 _C.OPTIM.EVAL_FREQ = 100
 
+
+###########################
+# Logistic Regression (full-batch)
+###########################
+_C.LOGREG_FULLBATCH = CN()
+_C.LOGREG_FULLBATCH.SEARCH_LIST = []
+_C.LOGREG_FULLBATCH.SEEDS = []
+_C.LOGREG_FULLBATCH.MAX_ITER = 1000
+_C.LOGREG_FULLBATCH.NUM_STEP = 8
 
 # ###########################
 # # Test

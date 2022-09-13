@@ -3,19 +3,10 @@
 declare -a IMAGES=(
                    "rn50_layer_0"
                 #    "vitb16_layer_0" 
-                #    "rn50_layer_1"
-                #    "vitb16_layer_1"
-                #    "rn50_layer_2"
-                #    "vitb16_layer_2"
-                #    "vitb16_layer_4"
-                #    "rn50_layer_all"
-                #    "vitb16_layer_all"
-                )
+                  )
 
 declare -a TEXTS=(
                   "layer_0" 
-                #   "layer_1" 
-                #   "layer_all"
                   )
 
 declare -a TEMPLATES=(
@@ -32,7 +23,7 @@ declare -a VIEWS=(
                  )
                   
 declare -a DATASETS=(
-                     "imagenet"
+                    #  "imagenet"
                     #  "caltech101"
                     #  "dtd"
                     #  "eurosat"
@@ -42,14 +33,24 @@ declare -a DATASETS=(
                     #  "oxford_pets"
                     #  "stanford_cars"
                     #  "sun397"
-                    #  "ucf101" 
+                     "ucf101" 
                      )
+
+declare -a CROSS_MODALS=(
+                         "text_ratio_0"
+                         "text_ratio_0.5"
+                         "text_ratio_1"
+                        )
+
+
     
 echo "IMAGES: ${IMAGES[@]}"
 echo "TEXTS: ${TEXTS[@]}"
 echo "TEMPLATES: ${TEMPLATES[@]}"
 echo "VIEWS: ${VIEWS[@]}"
 echo "DATASETS: ${DATASETS[@]}"
+echo "CROSS_MODALS: ${CROSS_MODALS[@]}"
+
 echo " "
 for DATASET in "${DATASETS[@]}"
 do  
@@ -69,17 +70,19 @@ do
                     for SHOTS in 1 2 4 8 16
                     do 
                         echo "SHOTS: $SHOTS"
-                        for SEED in 1 2 3
-                        do
-                            echo "SEED: $SEED"
-                            python features.py \
-                            --dataset-config-file config/datasets/${DATASET}.yaml \
-                            --few-shot-config-file config/few_shot/shot_${SHOTS}.yaml \
-                            --image-encoder-config-file config/features/image/${IMAGE}.yaml \
-                            --text-encoder-config-file config/features/text/${TEXT}.yaml \
-                            --template-config-file config/features/template/${TEMPLATE}.yaml \
-                            --view-config-file config/features/view/${VIEW}.yaml \
-                            SEED ${SEED}
+                            for CROSS_MODAL in "${CROSS_MODALS[@]}"
+                            do
+                                echo "CROSS_MODAL: $CROSS_MODAL"
+                                python logreg_fullbatch.py \
+                                --dataset-config-file config/datasets/${DATASET}.yaml \
+                                --few-shot-config-file config/few_shot/shot_${SHOTS}.yaml \
+                                --image-encoder-config-file config/features/image/${IMAGE}.yaml \
+                                --text-encoder-config-file config/features/text/${TEXT}.yaml \
+                                --template-config-file config/features/template/${TEMPLATE}.yaml \
+                                --view-config-file config/features/view/${VIEW}.yaml \
+                                --cross-modal-config-file config/cross_modal/${CROSS_MODAL}.yaml \
+                                --hyperparams-config-file config/hyperparams/logreg_fullbatch/default.yaml
+                            done
                         done
                     done
                 done
