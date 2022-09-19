@@ -1,0 +1,6 @@
+FEATURE:
+  VIEWS_PER_TRAIN: 10
+  VIEWS_PER_VAL: 10
+
+INPUT:
+  TRANSFORMS: ["random_crop", "random_flip", "normalize"]

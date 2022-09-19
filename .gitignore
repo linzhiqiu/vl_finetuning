@@ -5,6 +5,8 @@
 /features/
 /logreg_minibatch/
 /logreg_fullbatch/
+/logreg_fullbatch_results/
+/logreg_minibatch_results/
 /eval/
 
 # ImageNet train/val/test split file

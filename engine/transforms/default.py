@@ -212,7 +212,6 @@ def _build_transform_train(cfg, choices, target_size, normalize):
 
     # Make sure the image size matches the target size
     conditions = []
-    conditions += ["random_crop" not in choices]
     conditions += ["random_resized_crop" not in choices]
     conditions += ["center_crop" not in choices]
     if all(conditions):
@@ -231,6 +230,7 @@ def _build_transform_train(cfg, choices, target_size, normalize):
     if "random_crop" in choices:
         crop_padding = cfg.INPUT.CROP_PADDING
         print(f"+ random crop (padding = {crop_padding})")
+        tfm_train += [Resize(max(input_size), interpolation=interp_mode)]
         tfm_train += [RandomCrop(input_size, padding=crop_padding)]
 
     if "random_resized_crop" in choices:

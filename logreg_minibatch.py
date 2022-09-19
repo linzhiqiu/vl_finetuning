@@ -246,6 +246,20 @@ def validate(logit_head, image_encoder, val_loader, device="cuda"):
     val_acc /= val_count
     return val_acc
 
+def get_valid_batch_sizes(cfg, text_dataset, image_train_dataset):
+    VALID_BATCH_SIZES = []
+    for batch_size in cfg.OPTIM.BATCH_SIZE:
+        text_batch_size = int(batch_size * cfg.MODALITY.TEXT_BATCH_RATIO)
+        image_batch_size = batch_size - text_batch_size
+        # check if text batch size is smaller than the size of text dataset
+        if text_batch_size == 0 or text_batch_size < len(text_dataset):
+            # check if image batch size is smaller than the size of image dataset
+            if image_batch_size == 0 or image_batch_size < len(image_train_dataset):
+                VALID_BATCH_SIZES.append(batch_size)
+    if len(VALID_BATCH_SIZES) == 0:
+        import pdb; pdb.set_trace()
+    print("Valid batch sizes: {}/{}".format(len(VALID_BATCH_SIZES), len(cfg.OPTIM.BATCH_SIZE)))
+    return VALID_BATCH_SIZES
 
 def main(args):
     cfg = setup_cfg(args)
@@ -284,20 +298,7 @@ def main(args):
     save_dir = get_save_dir(cfg)
 
     # filter out invalid batch sizes
-    _, num_classes, _ = make_classifier_head(
-        cfg, text_dataset)
-    VALID_BATCH_SIZES = []
-    for batch_size in cfg.OPTIM.BATCH_SIZE:
-        text_batch_size = int(batch_size * cfg.MODALITY.TEXT_BATCH_RATIO)
-        image_batch_size = batch_size - text_batch_size
-        # check if text batch size is smaller than the size of text dataset
-        if text_batch_size == 0 or text_batch_size < len(text_dataset):
-            # check if image batch size is smaller than the size of image dataset
-            if image_batch_size == 0 or image_batch_size < len(image_train_dataset):
-                VALID_BATCH_SIZES.append(batch_size)
-    if len(VALID_BATCH_SIZES) == 0:
-        import pdb; pdb.set_trace()
-    print("Valid batch sizes: {}/{}".format(len(VALID_BATCH_SIZES), len(cfg.OPTIM.BATCH_SIZE)))
+    VALID_BATCH_SIZES = get_valid_batch_sizes(cfg, text_dataset, image_train_dataset)
 
     def get_experiment_count(cfg):
         count = 1
@@ -317,15 +318,29 @@ def main(args):
 
                     hyperparams_str = get_hyperparams_str(
                         cfg.OPTIM.NAME, lr, wd, batch_size, iters)
-                    print(f"Hyperparameters [{cur_count}/{experiment_count}]: {hyperparams_str}")
                     
+                    # check if experiment has been done
+                    checkpoint_dir = os.path.join(save_dir, hyperparams_str)
+                    makedirs(checkpoint_dir)
+                    best_val_path = os.path.join(checkpoint_dir, "best_val.pth")
+                    last_iter_path = os.path.join(checkpoint_dir, "last_iter.pth")
+
+                    if os.path.exists(best_val_path) and os.path.exists(last_iter_path):
+                        print(f"Hyperparameters [{cur_count}/{experiment_count}]: {hyperparams_str}. Already Done")
+                        continue
+                    else:
+                        print(f"Hyperparameters [{cur_count}/{experiment_count}]: {hyperparams_str}. Running")
+
                     # train logreg
 
                     # Create the logreg model
                     head, num_classes, in_features = make_classifier_head(
-                        cfg, text_dataset)
+                        cfg.ARCHITECTURE.HEAD, cfg.FEATURE.BACKBONE, cfg.ARCHITECTURE.BIAS, text_dataset)
                     logit_head = make_logit_head(
-                        cfg, head
+                        head,
+                        cfg.LOGIT.FEATURE_NORM,
+                        cfg.LOGIT.HEAD_NORM,
+                        cfg.LOGIT.USE_LOGIT_SCALE,
                     ).train().cuda()
 
                     image_encoder = torch.load(
@@ -388,10 +403,6 @@ def main(args):
                         optimizer, scheduler, criterion, iters,
                         eval_freq=cfg.OPTIM.EVAL_FREQ)
                     
-                    checkpoint_dir = os.path.join(save_dir, hyperparams_str)
-                    makedirs(checkpoint_dir)
-                    best_val_path = os.path.join(checkpoint_dir, "best_val.pth")
-                    last_iter_path = os.path.join(checkpoint_dir, "last_iter.pth")
                     torch.save(best_val_dict, best_val_path)
                     torch.save(last_iter_dict, last_iter_path)
 

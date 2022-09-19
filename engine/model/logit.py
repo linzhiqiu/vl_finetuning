@@ -36,10 +36,10 @@ class LogitHead(nn.Module):
         return x
 
 
-def make_logit_head(cfg, head, logit_scale=100.):
+def make_logit_head(head, feature_norm, head_norm, use_logit_scale, logit_scale=100.):
     return LogitHead(
         head,
-        cfg.LOGIT.FEATURE_NORM,
-        cfg.LOGIT.HEAD_NORM,
-        logit_scale if cfg.LOGIT.USE_LOGIT_SCALE else None,
+        feature_norm=feature_norm,
+        head_norm=head_norm,
+        logit_scale=logit_scale if use_logit_scale else None,
     )

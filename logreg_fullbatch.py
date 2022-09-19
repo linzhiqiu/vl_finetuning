@@ -63,7 +63,10 @@ def get_save_dir(cfg):
     return save_dir
 
 
-def logistic_regression_fullbatch(cfg, save_path):
+def logistic_regression_fullbatch(cfg, summary_path, save_path):
+    if os.path.exists(save_path):
+        print(f"File {save_path} already exists. Skipping.")
+        return
     test_acc_step_list = np.zeros(
         [len(cfg.LOGREG_FULLBATCH.SEEDS), cfg.LOGREG_FULLBATCH.NUM_STEP])
     for seed_idx, seed in enumerate(cfg.LOGREG_FULLBATCH.SEEDS):
@@ -153,7 +156,7 @@ def logistic_regression_fullbatch(cfg, save_path):
             test_acc_step_list[seed_idx - 1, step] = test_acc
 
             saveline = "{}, seed_idx {}, {} shot, weight {}, test_acc {:.2f}\n".format(cfg.DATASET.NAME, seed_idx, cfg.DATASET.NUM_SHOTS, c_final, test_acc)
-            with open(save_path, "a+") as writer:
+            with open(summary_path, "a+") as writer:
                 writer.write(saveline)
             return (
                 np.power(10, c_left),
@@ -168,12 +171,13 @@ def logistic_regression_fullbatch(cfg, save_path):
             c_left, c_right = binary_search(c_left, c_right)
     # save results of last step
     test_acc_list = test_acc_step_list[:, -1]
+    np.save(save_path, np.array(test_acc_list))
     acc_mean = np.mean(test_acc_list)
     acc_std = np.std(test_acc_list)
     save_line = "{}, {} Shot, Test acc stat: {:.2f} ({:.2f})\n".format(
         cfg.DATASET.NAME, cfg.DATASET.NUM_SHOTS, acc_mean, acc_std)
     print(save_line, flush=True)
-    with open(save_path, "a+") as writer:
+    with open(summary_path, "a+") as writer:
         writer.write(save_line)
 
 
@@ -223,8 +227,9 @@ def main(args):
 
     save_dir = get_save_dir(cfg)
     makedirs(save_dir)
-    save_path = os.path.join(save_dir, f"{get_filename(args.hyperparams_config_file)}_log.txt")
-    logistic_regression_fullbatch(cfg, save_path)
+    summary_path = os.path.join(save_dir, f"{get_filename(args.hyperparams_config_file)}_log.txt")
+    save_path = os.path.join(save_dir, f"{get_filename(args.hyperparams_config_file)}_test_accs.npy")
+    logistic_regression_fullbatch(cfg, summary_path, save_path)
 
 
 if __name__ == "__main__":

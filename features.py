@@ -28,6 +28,7 @@ def get_few_shot_setup_name(cfg):
 
 transforms_dict = {
     'rcrop' : ['random_resized_crop', 'random_flip', 'normalize'],
+    'randomcrop' : ['random_crop', 'random_flip', 'normalize'],
     'ccrop' : ['center_crop', 'normalize']
 }
 def get_transform_name(cfg):
@@ -215,9 +216,9 @@ def main(args):
     # print("** System info **\n{}\n".format(collect_env_info()))
 
     # Check if few-shot indices exist
-    few_shot_index_file = os.path.join(
-        cfg.FEW_SHOT_DIR, cfg.DATASET.NAME, f"shot_{cfg.DATASET.NUM_SHOTS}-seed_{cfg.SEED}.json")
-    assert os.path.exists(few_shot_index_file)
+    # few_shot_index_file = os.path.join(
+    #     cfg.FEW_SHOT_DIR, cfg.DATASET.NAME, f"shot_{cfg.DATASET.NUM_SHOTS}-seed_{cfg.SEED}.json")
+    # assert os.path.exists(few_shot_index_file)
 
     few_shot_benchmark = get_few_shot_benchmark(cfg)
 

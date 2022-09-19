@@ -1,11 +1,19 @@
 #!/bin/bash
 
-WORKERS=0
+# WORKERS=0
+WORKERS=4
 
 TOTAL=1
 declare -a IMAGES=(
-                   "rn50_layer_0"
+                #    "rn50_layer_0"
                 #    "vitb16_layer_0" 
+                   "rn50_layer_1"
+                #    "vitb16_layer_1"
+                   "rn50_layer_2"
+                #    "vitb16_layer_2"
+                #    "vitb16_layer_4"
+                #    "rn50_layer_all"
+                #    "vitb16_layer_all"
                 )
 TOTAL=$(( TOTAL * ${#IMAGES[@]} ))
 
@@ -25,10 +33,10 @@ declare -a TEMPLATES=(
 TOTAL=$(( TOTAL * ${#TEMPLATES[@]} ))
 
 declare -a VIEWS=(
-                #   "view_10_valview_10_randomcrop"
                   "view_1_ccrop"
+                  "view_10_valview_10_randomcrop"
                 #   "view_100_rcrop"
-                #   "view_100_valview_100_rcrop"
+                  "view_100_valview_100_rcrop"
                  )
 TOTAL=$(( TOTAL * ${#VIEWS[@]} ))
                   
@@ -48,11 +56,11 @@ declare -a DATASETS=(
 TOTAL=$(( TOTAL * ${#DATASETS[@]} ))
 
 declare -a CROSS_MODALS=(
-                         "text_ratio_1"
-                         "text_ratio_0.2"
-                         "text_ratio_0.8"
-                         "text_ratio_0.5"
                          "text_ratio_0"
+                        #  "text_ratio_0.2"
+                         "text_ratio_0.5"
+                        #  "text_ratio_0.8"
+                        #  "text_ratio_1"
                         )
 TOTAL=$(( TOTAL * ${#CROSS_MODALS[@]} ))
 
@@ -64,9 +72,7 @@ declare -a LOGITS=(
 TOTAL=$(( TOTAL * ${#LOGITS[@]} ))
 
 declare -a HYPERS=(
-                #    "sgd"
-                #    "adamw"
-                   "sam"
+                   "partial_adamw"
                   )
 TOTAL=$(( TOTAL * ${#HYPERS[@]} ))
 
@@ -74,18 +80,18 @@ declare -a ARCHITECTURES=(
                         #   "linear_bias"
                         #   "linear_zeroshot_bias"
                         #   "mlp_bias"
-                          "linear"
-                        #   "linear_zeroshot"
+                        #   "linear"
+                          "linear_zeroshot"
                         #   "mlp"
                          )
 TOTAL=$(( TOTAL * ${#ARCHITECTURES[@]} ))
 
 declare -a ALL_SHOTS=(
-    # "1"
-    # "2"
-    # "4"
+    "1"
+    "2"
+    "4"
     "8"
-    # "16"
+    "16"
 )
 TOTAL=$(( TOTAL * ${#ALL_SHOTS[@]} ))
 

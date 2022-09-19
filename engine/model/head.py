@@ -15,30 +15,31 @@ def get_zero_shot_weights(text_dataset, num_classes, in_features):
     return weights
 
 
-def make_classifier_head(cfg, text_dataset):
-    assert cfg.ARCHITECTURE.HEAD in AVAI_HEADS
-    if cfg.FEATURE.BACKBONE == 'ViT-B/16':
+def make_classifier_head(head_type, backbone_type, bias, text_dataset):
+    assert head_type in AVAI_HEADS
+    if backbone_type == 'ViT-B/16':
         in_features = 512
-    elif cfg.FEATURE.BACKBONE == 'RN50':
+    elif backbone_type == 'RN50':
         in_features = 1024
     assert text_dataset.input_tensor.shape[1] == in_features
 
     num_classes = int(text_dataset.label_tensor.max()) + 1
 
-    if cfg.ARCHITECTURE.HEAD == 'linear':
-        head = nn.Linear(in_features, num_classes, bias=cfg.ARCHITECTURE.BIAS)
-    elif cfg.ARCHITECTURE.HEAD == 'linear_zeroshot':
-        head = nn.Linear(in_features, num_classes, bias=cfg.ARCHITECTURE.BIAS)
+    if head_type == 'linear':
+        head = nn.Linear(in_features, num_classes, bias=bias)
+    elif head_type == 'linear_zeroshot':
+        head = nn.Linear(in_features, num_classes, bias=bias)
         head.weight.data = get_zero_shot_weights(
             text_dataset, num_classes, in_features)
-    elif cfg.ARCHITECTURE.HEAD == 'mlp':
+    elif head_type == 'mlp':
         head = nn.Sequential(
             nn.Linear(in_features, in_features // 4,
-                      bias=cfg.ARCHITECTURE.BIAS),
+                      bias=bias),
             nn.ReLU(),
             nn.Linear(in_features // 4, num_classes,
-                      bias=cfg.ARCHITECTURE.BIAS),
+                      bias=bias),
         )
     else:
-        raise ValueError(f"Invalid head: {cfg.ARCHITECTURE.HEAD}")
+        raise ValueError(f"Invalid head: {head_type}")
     return head, num_classes, in_features
+
