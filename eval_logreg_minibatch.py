@@ -16,6 +16,7 @@ from copy import deepcopy
 import os, argparse
 import pdb
 import torch
+torch.set_num_threads(2)
 from torch.utils.data import DataLoader
 import numpy as np
 import csv
@@ -35,16 +36,22 @@ from features import get_backbone_name, \
 from logreg_minibatch import get_hyperparams_str, get_save_dir, get_valid_batch_sizes, validate
 
 
-# PARTIAL = True
-PARTIAL = False
-if PARTIAL:
+EVAL_MODE = 'partial'
+# EVAL_MODE = 'optim'
+# EVAL_MODE = 'zero_shot_init'
+# EVAL_MODE = "template_search"
+# EVAL_MODE = 'zero_shot_init_single'
+# EVAL_MODE = 'normtext'
+# EVAL_MODE = 'randomview'
+# EVAL_MODE = 'extra_default'
+if EVAL_MODE == 'partial':
     #### Partial START
     EVAL_DIR = "./partial_results"
 
     IMAGES = [
         "rn50_layer_1",
+        # "rn50_layer_2",
         # "vitb16_layer_1",
-        "rn50_layer_2",
         # "vitb16_layer_2",
         # # "vitb16_layer_4",
         # "rn50_layer_all",
@@ -67,89 +74,6 @@ if PARTIAL:
     VIEWS = [
         "view_10_valview_10_randomcrop",
         "view_1_ccrop",
-        # "view_100_rcrop",
-        "view_100_valview_100_rcrop",
-    ]
-
-    DATASETS = [
-        "imagenet",
-        # "caltech101",
-        # "dtd",
-        # "eurosat",
-        # "fgvc_aircraft",
-        # "food101",
-        # "oxford_flowers",
-        # "oxford_pets",
-        # "stanford_cars",
-        # "sun397",
-        # "ucf101",
-    ]
-
-    CROSS_MODALS = [
-        "text_ratio_0.5",
-        "text_ratio_0",
-    ]
-
-    LOGITS = [
-        # "cosine_logit_scale",
-        # "cosine",
-        "linear",
-    ]
-
-    HYPERS = [
-        "partial_adamw"
-    ]
-
-    ARCHITECTURES = [
-        "linear_zeroshot",
-    ]
-
-    SEEDS = [
-        3,
-        2,
-        1,
-    ]
-
-    SHOTS = [
-        # 1,
-        # 2,
-        # 4,
-        8,
-        # 16
-    ]
-    #### Partial END
-else:
-    EVAL_DIR = "./logreg_minibatch_results"
-    ## first layer
-    IMAGES = [
-        "rn50_layer_0",
-        # "vitb16_layer_0",
-        # "rn50_layer_1",
-        # "vitb16_layer_1",
-        # "rn50_layer_2",
-        # "vitb16_layer_2",
-        # # "vitb16_layer_4",
-        # "rn50_layer_all",
-        # "vitb16_layer_all",
-    ]
-
-    TEXTS = [
-        "layer_0",
-        #   "layer_1",
-        #   "layer_all",
-    ]
-
-    TEMPLATES = [
-        # "classname",
-        # "default",
-        # "extra",
-        "single",
-    ]
-
-    VIEWS = [
-        # "view_10_valview_10_randomcrop",
-        "view_1_ccrop",
-        # "view_100_rcrop",
         # "view_100_valview_100_rcrop",
     ]
 
@@ -168,13 +92,73 @@ else:
     ]
 
     CROSS_MODALS = [
-        "text_ratio_0.8",
-        "text_ratio_1",
-        "text_ratio_0.2",
-        "text_ratio_0.5",
+        "normtext_ratio_0.5",
+        # "text_ratio_0.5",
         "text_ratio_0",
     ]
 
+    LOGITS = [
+        "cosine_logit_scale",
+        # "cosine",
+        "linear",
+    ]
+
+    HYPERS = [
+        # "partial_adamw"
+        "partial_adamw_fast"
+    ]
+
+    ARCHITECTURES = [
+        "linear_zeroshot",
+    ]
+
+    SEEDS = [
+        1,
+        2,
+        3,
+    ]
+
+    SHOTS = [
+        # 1,
+        # 2,
+        # 4,
+        # 8,
+        16
+    ]
+    #### Partial END
+elif EVAL_MODE == 'randomview':
+    EVAL_DIR = "./randomview_ablation_results"
+    ## first layer
+    IMAGES = ["rn50_layer_0"]
+
+    TEXTS = ["layer_0"]
+
+    TEMPLATES = ["single"]
+
+    VIEWS = [
+        "view_10_valview_10_randomcrop",
+        # "view_1_ccrop",
+    ]
+    DATASETS = [
+        "imagenet",
+        "caltech101",
+        "dtd",
+        "eurosat",
+        "fgvc_aircraft",
+        "food101",
+        "oxford_flowers",
+        "oxford_pets",
+        "stanford_cars",
+        "sun397",
+        "ucf101",
+    ]
+
+    CROSS_MODALS = [
+        "text_ratio_0",
+        "normtext_ratio_0.5",
+        "normtext_ratio_0.2",
+        "normtext_ratio_0.8",
+    ]
     LOGITS = [
         # "cosine_logit_scale",
         # "cosine",
@@ -182,8 +166,81 @@ else:
     ]
 
     HYPERS = [
+        "adamw_2",
+    ]
+
+    ARCHITECTURES = [
+        "linear",
+    ]
+
+    SEEDS = [
+        1,
+        2,
+        3,
+    ]
+
+    SHOTS = [
+        1,
+        2,
+        4,
+        8,
+        16
+    ]
+elif EVAL_MODE == 'optim':
+    # EVAL_DIR = "./logreg_minibatch_results"
+    EVAL_DIR = "./optim_ablation_results"
+    ## first layer
+    IMAGES = ["rn50_layer_0"]
+
+    TEXTS = ["layer_0"]
+
+    TEMPLATES = ["single"]
+
+    VIEWS = [
+        # "view_10_valview_10_randomcrop",
+        "view_1_ccrop",
+        # "view_100_rcrop",
+        # "view_100_valview_100_rcrop",
+    ]
+
+    DATASETS = [
+        "imagenet",
+        "caltech101",
+        "dtd", # done
+        "eurosat", # done
+        "fgvc_aircraft", # done
+        "food101",
+        "oxford_flowers", # done
+        "oxford_pets", # done
+        "stanford_cars", # done
+        "sun397", # done
+        "ucf101",  # done
+    ]
+
+    CROSS_MODALS = [
+        "text_ratio_0",
+        # "normtext_ratio_0.5",
+        # "normtext_ratio_0.2",
+        # "normtext_ratio_0.8",
+        # "text_ratio_0.2",
+        # "text_ratio_0.5",
+        # "text_ratio_0.8",
+        # "text_ratio_1",
+    ]
+
+    LOGITS = [
+        # "cosine_logit_scale",
+        # "cosine",
+        "linear",
+    ]
+    
+    HYPERS = [
+        # "sam_1",
+        # "sam_best",
+        # "sam",
+        # "adamw_2",
         "adamw",
-        # "sgd",
+        "sgd",
     ]
 
     ARCHITECTURES = [
@@ -202,13 +259,239 @@ else:
     ]
 
     SHOTS = [
-        # 1,
-        # 2,
-        # 4,
+        1,
+        2,
+        4,
         8,
-        # 16
+        16
+    ]
+elif EVAL_MODE == 'normtext':
+    # EVAL_DIR = "./logreg_minibatch_results"
+    EVAL_DIR = "./normtext_ablation_results"
+    ## first layer
+    IMAGES = ["rn50_layer_0"]
+
+    TEXTS = ["layer_0"]
+
+    TEMPLATES = ["single"]
+
+    VIEWS = [
+        "view_1_ccrop",
     ]
 
+    DATASETS = [
+        "imagenet",
+        # "caltech101",
+        # "dtd",
+        # "eurosat",
+        # "fgvc_aircraft",
+        # "food101",
+        # "oxford_flowers",
+        # "oxford_pets",
+        # "stanford_cars",
+        # "sun397",
+        # "ucf101",
+    ]
+
+    CROSS_MODALS = [
+        "text_ratio_0",
+        "normtext_ratio_0.5",
+        "normtext_ratio_0.2",
+        "normtext_ratio_0.8",
+    ]
+
+    LOGITS = [
+        "linear",
+    ]
+
+    HYPERS = [
+        "adamw_2",
+    ]
+
+    ARCHITECTURES = [
+        "linear",
+    ]
+
+    SEEDS = [
+        1,
+        2,
+        3,
+    ]
+
+    SHOTS = [
+        1,
+        2,
+        4,
+        8,
+        16
+    ]
+elif EVAL_MODE == 'extra_default':
+    # EVAL_DIR = "./logreg_minibatch_results"
+    EVAL_DIR = "./textaug_ablation_results"
+    ## first layer
+    IMAGES = ["rn50_layer_0"]
+
+    TEXTS = ["layer_0"]
+
+    TEMPLATES = ["single", "extra_default"]
+
+    VIEWS = [
+        "view_1_ccrop",
+    ]
+
+    DATASETS = [
+        "imagenet",
+    ]
+
+    CROSS_MODALS = [
+        "text_ratio_0",
+        "normtext_ratio_0.5",
+        "normtext_ratio_0.2",
+        "normtext_ratio_0.8",
+    ]
+
+    LOGITS = [
+        "linear",
+    ]
+
+    HYPERS = [
+        "adamw_2",
+    ]
+
+    ARCHITECTURES = [
+        "linear",
+    ]
+
+    SEEDS = [
+        1,
+        2,
+        3,
+    ]
+
+    SHOTS = [
+        1,
+        2,
+        4,
+        8,
+        16
+    ]
+elif EVAL_MODE == 'zero_shot_init':
+    # EVAL_DIR = "./logreg_minibatch_results"
+    EVAL_DIR = "./zero_shot_init_ablation_results"
+    ## first layer
+    IMAGES = ["rn50_layer_0"]
+
+    TEXTS = ["layer_0"]
+
+    TEMPLATES = ["default"]
+
+    VIEWS = [
+        "view_1_ccrop",
+    ]
+
+    DATASETS = [
+        "imagenet",
+        "caltech101",
+        "dtd",
+        "eurosat",
+        "fgvc_aircraft",
+        "food101",
+        "oxford_flowers",
+        "oxford_pets",
+        "stanford_cars",
+        "sun397",
+        "ucf101",
+    ]
+
+    CROSS_MODALS = [
+        "normtext_ratio_0.5",
+        "normtext_ratio_0.2",
+        "normtext_ratio_0.8",
+    ]
+
+    LOGITS = [
+        "linear",
+    ]
+
+    HYPERS = [
+        "adamw_2",
+    ]
+
+    ARCHITECTURES = [
+        "linear_zeroshot",
+    ]
+
+    SEEDS = [
+        1,
+        2,
+        3,
+    ]
+
+    SHOTS = [
+        1,
+        2,
+        4,
+        8,
+        16
+    ]
+elif EVAL_MODE == 'zero_shot_init_single':
+    EVAL_DIR = "./zero_shot_init_single_ablation_results"
+    ## first layer
+    IMAGES = ["rn50_layer_0"]
+
+    TEXTS = ["layer_0"]
+
+    TEMPLATES = ["single"]
+
+    VIEWS = [
+        "view_1_ccrop",
+    ]
+
+    DATASETS = [
+        "imagenet",
+        "caltech101",
+        "dtd",
+        "eurosat",
+        "fgvc_aircraft",
+        "food101",
+        "oxford_flowers",
+        "oxford_pets",
+        "stanford_cars",
+        "sun397",
+        "ucf101",
+    ]
+
+    CROSS_MODALS = [
+        "normtext_ratio_0.5",
+        "normtext_ratio_0.2",
+        "normtext_ratio_0.8",
+    ]
+
+    LOGITS = [
+        "linear",
+    ]
+
+    HYPERS = [
+        "adamw_2",
+    ]
+
+    ARCHITECTURES = [
+        "linear_zeroshot",
+    ]
+
+    SEEDS = [
+        1,
+        2,
+        3,
+    ]
+
+    SHOTS = [
+        1,
+        2,
+        4,
+        8,
+        16
+    ]
 
 def setup_cfg(dataset,
               shots,
@@ -287,17 +570,17 @@ def get_eval_heads(head, zero_shot_weights, ratio_list=[0.2, 0.5, 0.8]):
 
     eval_heads = {
         'head': logit_head.cuda().eval(),
-        'normhead': normhead_head.cuda().eval(),
+        # 'normhead': normhead_head.cuda().eval(),
     }
     for ratio in ratio_list:
         wiseft = get_wiseft(deepcopy(head), zero_shot_weights, ratio)
         wiseft_head = make_logit_head(
             wiseft, False, False, False)
         eval_heads[f'head_wiseft_{ratio}'] = wiseft_head.cuda().eval()
-        normhead_wiseft = get_wiseft(deepcopy(normhead), zero_shot_weights, ratio)
-        normhead_wiseft_head = make_logit_head(
-            normhead_wiseft, False, False, False)
-        eval_heads[f'normhead_wiseft_{ratio}'] = normhead_wiseft_head.cuda().eval()
+        # normhead_wiseft = get_wiseft(deepcopy(normhead), zero_shot_weights, ratio)
+        # normhead_wiseft_head = make_logit_head(
+        #     normhead_wiseft, False, False, False)
+        # eval_heads[f'normhead_wiseft_{ratio}'] = normhead_wiseft_head.cuda().eval()
     return eval_heads
 
 def take_average(all_seed_dict,
@@ -495,6 +778,7 @@ def main():
                                                                     all_dataset_finished = False
                                                                     all_seed_finished = False
                                                                     all_hyper_finished = False
+                                                                    import pdb; pdb.set_trace()
                                                                     continue
                                                                 else:
                                                                     test_result_dict = {}
@@ -502,6 +786,10 @@ def main():
                                                                     if os.path.exists(test_result_path):
                                                                         print(f"Already exists: {hyperparams_str} {cur_count}/{experiment_count}")
                                                                         test_result_dict = torch.load(test_result_path)
+                                                                        for key in ['best_val', 'last_iter']:
+                                                                            normhead_keys = [eval_type for eval_type in test_result_dict[key]['test_accs'] if "normhead" in eval_type]
+                                                                            for eval_type in normhead_keys:
+                                                                                del test_result_dict[key]['test_accs'][eval_type]
                                                                     else:
                                                                         test_result_dict = {
                                                                             'best_val': {},
@@ -541,12 +829,13 @@ def main():
                                                                                     test_dataset,
                                                                                     batch_size=cfg.DATALOADER.TEST_BATCH_SIZE,
                                                                                     shuffle=False,
-                                                                                    num_workers=cfg.DATALOADER.NUM_WORKERS,
+                                                                                    num_workers=1,
                                                                                     pin_memory=True,
                                                                                 )
                                                                                 test_acc = validate(eval_head, image_encoder, test_loader, device="cuda")
                                                                                 test_result_dict[key]['test_accs'][eval_type] = test_acc
                                                                         torch.save(test_result_dict, test_result_path)
+                                                                        print(test_result_dict)
                                                                         print(f"Finished testing {hyperparams_str} {cur_count}/{experiment_count}")
                                                                     all_hyper_dict[lr][wd][batch_size][iters] = test_result_dict   
                                                                 
@@ -585,6 +874,7 @@ def main():
     now = datetime.now()
     dt_string = now.strftime("%m-%d-%Y-%H:%M")
     csv_path = os.path.join(EVAL_DIR, f"{dt_string}.csv")
+    import pdb; pdb.set_trace()
     print(f"Saving to {csv_path}")
     save_all_csv(all_headers, all_columns, csv_path)
     print("Done!")

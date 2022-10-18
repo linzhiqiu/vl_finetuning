@@ -1,0 +1,10 @@
+OPTIM:
+  NAME: "adamw"
+  LR: [0.001]
+  WEIGHT_DECAY: [0.01]
+  LR_SCHEDULER: 'cosine'
+  BATCH_SIZE: [64]
+  MAX_ITER: [12800]
+  WARMUP_ITER: 10
+  WARMUP_TYPE: "constant"
+  WARMUP_MIN_LR: 1e-5

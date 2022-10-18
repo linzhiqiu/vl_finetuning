@@ -41,13 +41,13 @@ TEMPLATES = [
 
 VIEWS = [
     "view_1_ccrop",
-    "view_10_valview_10_randomcrop",
+    # "view_10_valview_10_randomcrop",
     # "view_100_rcrop",
     # "view_100_valview_100_rcrop",
 ]
 
 DATASETS = [
-    # "imagenet",
+    "imagenet",
     "caltech101",
     "dtd",
     "eurosat",
@@ -61,9 +61,11 @@ DATASETS = [
 ]
 
 CROSS_MODALS = [
-    "text_ratio_0",
-    "text_ratio_0.5",
-    "text_ratio_1",
+    # "text_ratio_0",
+    # "text_ratio_0.5",
+    # "normtext_ratio_0.5",
+    "normboth_ratio_0.5",
+    # "text_ratio_1",
 ]
 
 SHOTS = [
@@ -197,6 +199,7 @@ def main():
                                     all_dataset_finished = False
                                     all_seed_finished = False
                                     print(f"Experiment not finished: {save_path}")
+                                    import pdb; pdb.set_trace()
                                     continue
                                 else:
                                     test_acc_lists = np.load(save_path)

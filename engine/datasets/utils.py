@@ -1,5 +1,7 @@
 import os
+import pdb
 import torch
+import torchvision
 from torchvision.datasets.folder import default_loader
 from engine.datasets import dataset_classes
 from engine.tools.utils import load_json
@@ -79,3 +81,37 @@ def get_few_shot_benchmark(cfg):
         'lab2cname': benchmark.lab2cname,
         'classnames': benchmark.classnames,
     }
+
+
+class TestDatasetWrapper(torch.utils.data.Dataset):
+
+    def __init__(self, data_source, transform):
+        self.data_source = data_source
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.data_source)
+
+    def __getitem__(self, idx):
+        item = self.data_source[idx]
+        img = self.transform(default_loader(item['impath']))
+
+        return img, item['label']
+
+def get_testset(cfg, transform):
+    if cfg.DATASET.NAME in dataset_classes:
+        benchmark = dataset_classes[cfg.DATASET.NAME](cfg)
+        return TestDatasetWrapper(benchmark.test, transform)
+    elif cfg.DATASET.NAME == 'food101_test':
+        return torchvision.datasets.Food101(root='/data3/zhiqiul/datasets', split='test', transform=transform, download=True)
+    elif cfg.DATASET.NAME == 'dtd_test':
+        return torchvision.datasets.DTD(root='/data3/zhiqiul/datasets', split='test', transform=transform, download=True)
+    else:
+        raise NotImplementedError()
+
+def get_label_map(cfg, dataset_name):
+    if dataset_name in ['imagenet_a', 'imagenet_r']:
+        benchmark = dataset_classes[dataset_name](cfg)
+        return benchmark.label_map
+    else:
+        return None

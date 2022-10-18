@@ -8,8 +8,8 @@ declare -a IMAGES=(
                 #    "rn50_layer_0"
                 #    "vitb16_layer_0" 
                    "rn50_layer_1"
-                #    "vitb16_layer_1"
                    "rn50_layer_2"
+                #    "vitb16_layer_1"
                 #    "vitb16_layer_2"
                 #    "vitb16_layer_4"
                 #    "rn50_layer_all"
@@ -33,9 +33,8 @@ declare -a TEMPLATES=(
 TOTAL=$(( TOTAL * ${#TEMPLATES[@]} ))
 
 declare -a VIEWS=(
-                  "view_1_ccrop"
-                  "view_10_valview_10_randomcrop"
-                #   "view_100_rcrop"
+                #   "view_1_ccrop"
+                #   "view_10_valview_10_randomcrop"
                   "view_100_valview_100_rcrop"
                  )
 TOTAL=$(( TOTAL * ${#VIEWS[@]} ))
@@ -58,21 +57,23 @@ TOTAL=$(( TOTAL * ${#DATASETS[@]} ))
 declare -a CROSS_MODALS=(
                          "text_ratio_0"
                         #  "text_ratio_0.2"
-                         "text_ratio_0.5"
+                        #  "text_ratio_0.5"
+                        "normtext_ratio_0.5"
                         #  "text_ratio_0.8"
                         #  "text_ratio_1"
                         )
 TOTAL=$(( TOTAL * ${#CROSS_MODALS[@]} ))
 
 declare -a LOGITS=(
-                #    "cosine_logit_scale"
+                   "cosine_logit_scale"
                 #    "cosine"
                    "linear"
                   )
 TOTAL=$(( TOTAL * ${#LOGITS[@]} ))
 
 declare -a HYPERS=(
-                   "partial_adamw"
+                #    "partial_adamw"
+                   "partial_adamw_fast"
                   )
 TOTAL=$(( TOTAL * ${#HYPERS[@]} ))
 
@@ -88,17 +89,17 @@ TOTAL=$(( TOTAL * ${#ARCHITECTURES[@]} ))
 
 declare -a ALL_SHOTS=(
     "1"
-    "2"
-    "4"
-    "8"
-    "16"
+    # "2"
+    # "4"
+    # "8"
+    # "16"
 )
 TOTAL=$(( TOTAL * ${#ALL_SHOTS[@]} ))
 
 declare -a ALL_SEEDS=(
     "1"
-    "2"
-    "3"
+    # "2"
+    # "3"
 )
 TOTAL=$(( TOTAL * ${#ALL_SEEDS[@]} ))
     

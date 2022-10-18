@@ -214,6 +214,7 @@ def _build_transform_train(cfg, choices, target_size, normalize):
     conditions = []
     conditions += ["random_resized_crop" not in choices]
     conditions += ["center_crop" not in choices]
+    conditions += ["random_crop" not in choices]
     if all(conditions):
         print(f"+ resize to {target_size}")
         tfm_train += [Resize(input_size, interpolation=interp_mode)]

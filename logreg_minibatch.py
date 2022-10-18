@@ -1,6 +1,7 @@
 from copy import deepcopy
 import os, argparse
 import torch
+torch.set_num_threads(4)
 from torch.utils.data import DataLoader
 
 from engine.tools.utils import makedirs, set_random_seed, collect_env_info
@@ -40,10 +41,15 @@ def get_cross_modal_name(cfg):
     image_feature_name = get_image_feature_name(cfg)
     if cfg.MODALITY.TEXT_BATCH_RATIO == 0:
         feature_name = image_feature_name
-    elif cfg.MODALITY.TEXT_BATCH_RATIO == 1:
-        feature_name = text_feature_name
     else:
-        feature_name = f"{text_feature_name}-{image_feature_name}-textratio_{cfg.MODALITY.TEXT_BATCH_RATIO}"
+        if cfg.MODALITY.TEXT_BATCH_RATIO == 1:
+            feature_name = text_feature_name
+        else:
+            feature_name = f"{text_feature_name}-{image_feature_name}-textratio_{cfg.MODALITY.TEXT_BATCH_RATIO}"
+        if cfg.MODALITY.TEXT_NORM:
+            feature_name += "-textnorm"
+    if cfg.MODALITY.IMG_NORM:
+        import pdb; pdb.set_trace()
     return os.path.join(
         get_backbone_name(cfg),
         feature_name
@@ -227,6 +233,7 @@ def train(logit_head, image_encoder, text_encoder,
         "text_encoder": deepcopy(text_encoder.state_dict()),
         "logit_head": deepcopy(logit_head.state_dict()),
     }
+    print(f"Best val acc: {best_val_dict['val_acc']:.4f} at iter {best_val_dict['iter']}")
     return best_val_dict, last_iter_dict
             
 
@@ -280,6 +287,8 @@ def main(args):
 
     text_features_path = get_text_features_path(cfg)
     text_features = torch.load(text_features_path)
+    if cfg.MODALITY.TEXT_NORM:
+        text_features['features'] = torch.nn.functional.normalize(text_features['features'], dim=1)
     text_dataset = TextTensorDataset(
         text_features['features'], text_features['labels'], text_features['eot_indices'])
 
@@ -324,7 +333,6 @@ def main(args):
                     makedirs(checkpoint_dir)
                     best_val_path = os.path.join(checkpoint_dir, "best_val.pth")
                     last_iter_path = os.path.join(checkpoint_dir, "last_iter.pth")
-
                     if os.path.exists(best_val_path) and os.path.exists(last_iter_path):
                         print(f"Hyperparameters [{cur_count}/{experiment_count}]: {hyperparams_str}. Already Done")
                         continue

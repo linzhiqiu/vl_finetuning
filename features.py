@@ -29,7 +29,8 @@ def get_few_shot_setup_name(cfg):
 transforms_dict = {
     'rcrop' : ['random_resized_crop', 'random_flip', 'normalize'],
     'randomcrop' : ['random_crop', 'random_flip', 'normalize'],
-    'ccrop' : ['center_crop', 'normalize']
+    'ccrop' : ['center_crop', 'normalize'],
+    'rflip' : ['center_crop', 'random_flip', 'normalize'],
 }
 def get_transform_name(cfg):
     for transform_name, transform_list in transforms_dict.items():
@@ -186,6 +187,7 @@ def extract_features(cfg, image_encoder, data_source, transform, num_views=1):
     # Start Feature Extractor
     ########################################
     image_encoder.feature_extractor.eval()
+
     with torch.no_grad():
         for _ in range(num_views):
             for batch_idx, batch in enumerate(loader):
@@ -297,6 +299,7 @@ def main(args):
             },
         }
         transform = build_transform(cfg, is_train=True)
+        # import pdb; pdb.set_trace()
         print(f"Extracting features for train split ...")
         image_features['train'] = extract_features(
             cfg, image_encoder, few_shot_benchmark['train'], 
@@ -314,7 +317,6 @@ def main(args):
     test_features_path = get_test_features_path(cfg)
 
     makedirs(os.path.dirname(test_features_path))
-
     if os.path.exists(test_features_path):
         print(f"Test features already saved at {test_features_path}")
     else:

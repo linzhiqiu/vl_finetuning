@@ -18,19 +18,28 @@ class ImageNetR(Benchmark):
     def __init__(self, cfg):
         root = os.path.abspath(os.path.expanduser(cfg.DATA_DIR))
         self.dataset_dir = os.path.join(root, self.dataset_name)
+        self.original_imagenet_dir = os.path.join(root, "imagenet")
+        original_text_file = os.path.join(self.original_imagenet_dir, "classnames.txt")
+        original_classnames = read_classnames(original_text_file)
+
         self.image_dir = os.path.join(self.dataset_dir, "imagenet-r")
 
         text_file = os.path.join(self.dataset_dir, "classnames.txt")
         classnames = read_classnames(text_file)
 
-        data = self.read_data(classnames)
+        data, label_map = self.read_data(classnames, original_classnames)
+        self.label_map = label_map
 
-        super().__init__(train_x=data, test=data)
+        super().__init__(train=data, val=data, test=data)
 
-    def read_data(self, classnames):
+    def read_data(self, classnames, original_classnames):
         image_dir = self.image_dir
         folders = listdir_nohidden(image_dir, sort=True)
         folders = [f for f in folders if f not in TO_BE_IGNORED]
+
+        original_folders = [folder for folder in original_classnames]
+        label_map = [original_folders.index(folder) for folder in folders]
+
         items = []
 
         for label, folder in enumerate(folders):
@@ -38,7 +47,7 @@ class ImageNetR(Benchmark):
             classname = classnames[folder]
             for imname in imnames:
                 impath = os.path.join(image_dir, folder, imname)
-                item = Datum(impath=impath, label=label, classname=classname)
+                item = {"impath": impath, "label": label, "classname": classname}
                 items.append(item)
 
-        return items
+        return items, label_map

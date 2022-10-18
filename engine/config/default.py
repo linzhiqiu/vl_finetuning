@@ -128,6 +128,8 @@ _C.ARCHITECTURE.BIAS = False
 ###########################
 _C.MODALITY = CN()
 _C.MODALITY.TEXT_BATCH_RATIO = 0.5
+_C.MODALITY.TEXT_NORM = False
+_C.MODALITY.IMG_NORM = False
 
 ###########################
 # Logit calculation (during mini-batch logistic regression training)
@@ -135,7 +137,10 @@ _C.MODALITY.TEXT_BATCH_RATIO = 0.5
 _C.LOGIT = CN()
 _C.LOGIT.FEATURE_NORM = False
 _C.LOGIT.HEAD_NORM = False
-_C.LOGIT.USE_LOGIT_SCALE = False
+_C.LOGIT.USE_LOGIT_SCALE = False  # use fixed logit value
+_C.LOGIT.LOGIT_SCALE = 4.60517
+_C.LOGIT.LEARN_LOGIT_SCALE = False  # learn logit scale
+_C.LOGIT.INIT_LEARN_LOGIT_SCALE = 2.65926
 
 ###########################
 # Optimization (for mini-batch logistic regression)

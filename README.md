@@ -88,6 +88,11 @@ python logreg_minibatch.py \
 bash logreg_minibatch.sh
 ```
 
+# Test feature extraction (for robustness test)
+```
+python test_features.py --dataset-config-file config/datasets/dtd_test.yaml --image-encoder-config-file config/features/image/rn50_layer_0.yaml --view-config-file config/features/view/view_1_ccrop.yaml
+```
+
 <!-- ## How to Run
 
 Click a paper below to see the detailed instructions on how to run the code to reproduce the results.

@@ -12,8 +12,8 @@ declare -a TEXTS=(
 TOTAL=$(( TOTAL * ${#TEXTS[@]} ))
 
 declare -a TEMPLATES=(
-                      "classname"
-                      "default" 
+                    #   "classname"
+                    #   "default" 
                     #   "extra"
                       "single"
                      )
@@ -22,30 +22,32 @@ TOTAL=$(( TOTAL * ${#TEMPLATES[@]} ))
 declare -a VIEWS=(
                   "view_1_ccrop"
                 #   "view_100_rcrop"
-                  "view_10_valview_10_randomcrop"
+                #   "view_10_valview_10_randomcrop"
                 #   "view_100_valview_100_rcrop"
                  )
 TOTAL=$(( TOTAL * ${#VIEWS[@]} ))
 
 declare -a DATASETS=(
-                     "imagenet"
+                    #  "imagenet"
                     #  "caltech101"
                     #  "dtd"
                     #  "eurosat"
                     #  "fgvc_aircraft"
                     #  "food101"
-                    #  "oxford_flowers"
-                    #  "oxford_pets"
-                    #  "stanford_cars"
-                    #  "sun397"
-                    #  "ucf101"
+                     "oxford_flowers"
+                     "oxford_pets"
+                     "stanford_cars"
+                     "sun397"
+                     "ucf101"
                      )
 TOTAL=$(( TOTAL * ${#DATASETS[@]} ))
 
 declare -a CROSS_MODALS=(
                         #  "text_ratio_1"
                         #  "text_ratio_0.5"
-                         "text_ratio_0"
+                        #  "normtext_ratio_0.5"
+                         "normboth_ratio_0.5"
+                        #  "text_ratio_0"
                         )
 TOTAL=$(( TOTAL * ${#CROSS_MODALS[@]} ))
 

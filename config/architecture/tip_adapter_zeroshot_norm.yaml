@@ -1,0 +1,3 @@
+ARCHITECTURE:
+  HEAD: "tip_adapter_zeroshot_norm"
+  BIAS: False

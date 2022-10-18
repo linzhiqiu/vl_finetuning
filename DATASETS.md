@@ -30,6 +30,7 @@ Datasets list:
 - [ImageNet-Sketch](#imagenet-sketch)
 - [ImageNet-A](#imagenet-a)
 - [ImageNet-R](#imagenet-r)
+- [ESC-50](#esc-50)
 
 The instructions to prepare each dataset are detailed below. To ensure reproducibility and fair comparison for future work, we provide fixed train/val/test splits for all datasets except ImageNet where the validation set is used as test set. The fixed splits are either from the original datasets (if available) or created by us.
 
@@ -264,6 +265,21 @@ The directory structure should look like
 
 ```
 imagenet-rendition/
+|–– imagenet-r/ # contains 200 folders whose names have the format of n*
+|–– classnames.txt
+```
+
+### ESC-50 (Dataset for Environmental Sound Classification)
+
+- Create a folder named `esc-50/` under `$DATA`.
+- Download the master.zip from <https://github.com/karolpiczak/ESC-50> (or run `wget https://github.com/karoldvl/ESC-50/archive/master.zip`)
+- Extract it to `$DATA/esc-50/`.
+<!-- - Copy `$DATA/imagenet/classnames.txt` to `$DATA/imagenet-rendition/`. -->
+
+The directory structure should look like
+
+```
+esc-50/
 |–– imagenet-r/ # contains 200 folders whose names have the format of n*
 |–– classnames.txt
 ```

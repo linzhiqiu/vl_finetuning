@@ -42,12 +42,17 @@ def get_cross_modal_name(cfg):
     image_feature_name = get_image_feature_name(cfg)
     if cfg.MODALITY.TEXT_BATCH_RATIO == 0:
         feature_name = image_feature_name
-    elif cfg.MODALITY.TEXT_BATCH_RATIO == 1:
-        feature_name = text_feature_name
-    elif cfg.MODALITY.TEXT_BATCH_RATIO == 0.5:
-        feature_name = f"{text_feature_name}-{image_feature_name}-both"
     else:
-        raise ValueError("Invalid text_batch_ratio")
+        if cfg.MODALITY.TEXT_BATCH_RATIO == 1:
+            feature_name = text_feature_name
+        elif cfg.MODALITY.TEXT_BATCH_RATIO == 0.5:
+            feature_name = f"{text_feature_name}-{image_feature_name}-both"
+        else:
+            raise ValueError("Invalid text_batch_ratio")
+        if cfg.MODALITY.TEXT_NORM:
+            feature_name += "-textnorm"
+    if cfg.MODALITY.IMG_NORM:
+        feature_name += "-imgnorm"
     return os.path.join(
         get_backbone_name(cfg),
         feature_name
@@ -90,20 +95,28 @@ def logistic_regression_fullbatch(cfg, summary_path, save_path):
         test_feature = test_features['features'].numpy()
         test_label = test_features['labels'].numpy()
 
+        if cfg.MODALITY.IMG_NORM:
+            image_train_feature = image_train_feature / np.linalg.norm(image_train_feature, axis=1, keepdims=True)
+            val_feature = val_feature / np.linalg.norm(val_feature, axis=1, keepdims=True)
+            test_feature = test_feature / np.linalg.norm(test_feature, axis=1, keepdims=True)
+        
         if cfg.MODALITY.TEXT_BATCH_RATIO == 0:
             # Image only
             train_feature = image_train_feature
             train_label = image_train_label
-        elif cfg.MODALITY.TEXT_BATCH_RATIO == 1:
-            # Text only
-            train_feature = text_feature
-            train_label = text_label
-        elif cfg.MODALITY.TEXT_BATCH_RATIO == 0.5:
-            # Both
-            train_feature = np.concatenate([image_train_feature, text_feature], axis=0)
-            train_label = np.concatenate([image_train_label, text_label], axis=0)
         else:
-            raise ValueError("Invalid text_batch_ratio")
+            if cfg.MODALITY.TEXT_NORM:
+                text_feature = text_feature / np.linalg.norm(text_feature, axis=1, keepdims=True)
+            if cfg.MODALITY.TEXT_BATCH_RATIO == 1:
+                # Text only
+                train_feature = text_feature
+                train_label = text_label
+            elif cfg.MODALITY.TEXT_BATCH_RATIO == 0.5:
+                # Both
+                train_feature = np.concatenate([image_train_feature, text_feature], axis=0)
+                train_label = np.concatenate([image_train_label, text_label], axis=0)
+            else:
+                raise ValueError("Invalid text_batch_ratio")
         
 
         # search initialization

@@ -20,6 +20,7 @@ declare -a TEMPLATES=(
                     #   "classname"
                     #   "default" 
                     #   "extra"
+                    #   "extra_default"
                       "single"
                      )
 TOTAL=$(( TOTAL * ${#TEMPLATES[@]} ))
@@ -33,7 +34,7 @@ declare -a VIEWS=(
 TOTAL=$(( TOTAL * ${#VIEWS[@]} ))
                   
 declare -a DATASETS=(
-                     "imagenet"
+                    #  "imagenet"
                     #  "caltech101"
                     #  "dtd"
                     #  "eurosat"
@@ -42,17 +43,20 @@ declare -a DATASETS=(
                     #  "oxford_flowers"
                     #  "oxford_pets"
                     #  "stanford_cars"
-                    #  "sun397"
+                     "sun397"
                     #  "ucf101" 
                      )
 TOTAL=$(( TOTAL * ${#DATASETS[@]} ))
 
 declare -a CROSS_MODALS=(
-                         "text_ratio_1"
-                         "text_ratio_0.2"
-                         "text_ratio_0.8"
-                         "text_ratio_0.5"
+                        #  "text_ratio_1"
+                        #  "text_ratio_0.2"
+                        #  "text_ratio_0.8"
+                        #  "text_ratio_0.5"
                          "text_ratio_0"
+                        #  "normtext_ratio_0.5"
+                        #  "normtext_ratio_0.2"
+                        #  "normtext_ratio_0.8"
                         )
 TOTAL=$(( TOTAL * ${#CROSS_MODALS[@]} ))
 
@@ -64,9 +68,13 @@ declare -a LOGITS=(
 TOTAL=$(( TOTAL * ${#LOGITS[@]} ))
 
 declare -a HYPERS=(
-                #    "sgd"
-                #    "adamw"
-                   "sam"
+                   "sgd"
+                #    "sgd_2"
+                #    "adamw_2"
+                   "adamw"
+                #    "sam"
+                # "sam_best"
+                # "sam_1" # This is actually the best
                   )
 TOTAL=$(( TOTAL * ${#HYPERS[@]} ))
 
@@ -83,8 +91,8 @@ TOTAL=$(( TOTAL * ${#ARCHITECTURES[@]} ))
 declare -a ALL_SHOTS=(
     # "1"
     # "2"
-    # "4"
-    "8"
+    "4"
+    # "8"
     # "16"
 )
 TOTAL=$(( TOTAL * ${#ALL_SHOTS[@]} ))

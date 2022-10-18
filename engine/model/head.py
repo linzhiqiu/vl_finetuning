@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
-AVAI_HEADS = ['linear', 'linear_zeroshot', 'mlp']
+AVAI_HEADS = ['linear', 'linear_zeroshot', 'linear_zeroshot_norm', 'mlp']
 
 
 def get_zero_shot_weights(text_dataset, num_classes, in_features):
@@ -13,6 +14,7 @@ def get_zero_shot_weights(text_dataset, num_classes, in_features):
         count[label] += 1
     weights /= count.unsqueeze(1)
     return weights
+
 
 
 def make_classifier_head(head_type, backbone_type, bias, text_dataset):
@@ -31,6 +33,16 @@ def make_classifier_head(head_type, backbone_type, bias, text_dataset):
         head = nn.Linear(in_features, num_classes, bias=bias)
         head.weight.data = get_zero_shot_weights(
             text_dataset, num_classes, in_features)
+    elif head_type == 'linear_zeroshot_norm':
+        head = nn.Linear(in_features, num_classes, bias=bias)
+        head.weight.data = get_zero_shot_weights(
+            text_dataset, num_classes, in_features)
+        head.weight.data = F.normalize(head.weight.data, dim=1)
+    # elif head_type == 'tip_adapter_zeroshot_norm':
+    #     head = nn.Linear(in_features, num_classes, bias=bias)
+    #     head.weight.data = get_zero_shot_weights_norm(
+    #         text_dataset, num_classes, in_features)
+    #     head.weight.data = F.normalize(head.weight.data, dim=1)
     elif head_type == 'mlp':
         head = nn.Sequential(
             nn.Linear(in_features, in_features // 4,

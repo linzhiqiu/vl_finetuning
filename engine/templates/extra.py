@@ -1,3 +1,4 @@
+
 imagenet_templates = [
     "itap of a {}.",
     "a bad photo of the {}.",
@@ -149,13 +150,13 @@ eurosat_templates = [
 ]
 
 EXTRA_TEMPLATES = {
-    "oxford_pets": None,
-    "oxford_flowers": None,
+    "oxford_pets": pets_templates,
+    "oxford_flowers": flowers_templates,
     "fgvc_aircraft": aircraft_templates,
     "dtd": dtd_templates,
     "eurosat": eurosat_templates,
     "stanford_cars": cars_templates,
-    "food101": None,
+    "food101": food_templates,
     "sun397": sun397_templates,
     "caltech101": caltech101_templates,
     "ucf101": ucf101_templates,

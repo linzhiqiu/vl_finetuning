@@ -9,6 +9,19 @@
 /logreg_minibatch_results/
 /eval/
 
+# Checkpoints
+AudioCLIP-Partial-Training.pt
+audio_features.pt
+/audio_clip_*/
+/audio_few_shot_*/
+/debug_results/
+/eval_*/
+/*results*/
+/*results/
+/sam_audio/
+/zero_shot_clip/
+/indices/imagenet/shot_900-seed_1.json
+
 # ImageNet train/val/test split file
 splits/split_ImageNet.json
 
