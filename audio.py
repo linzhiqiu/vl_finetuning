@@ -1153,6 +1153,8 @@ def main():
                 all_dataset_dict['last_iter'][f"{dataset}_{architecture}_{cross_modal}_shot_{shots}"] = {
                     'test_acc_mean': all_seeds_dict_last_iter['mean'], 'test_acc_std': all_seeds_dict_last_iter['std']}
     all_dataset_path = os.path.join(result_dir, 'all_dataset_dict.pt')
+    import json
+    print(json.dumps(all_dataset_dict, indent=2))
     import pdb; pdb.set_trace()
     torch.save(all_dataset_dict, all_dataset_path)
 
