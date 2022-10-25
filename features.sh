@@ -4,7 +4,7 @@ TOTAL=1
 declare -a IMAGES=(
                    "rn50_layer_0"
                 #    "vitb16_layer_0" 
-                #    "rn50_layer_1"
+                   "rn50_layer_1"
                 #    "vitb16_layer_1"
                 #    "rn50_layer_2"
                 #    "vitb16_layer_2"
@@ -34,17 +34,19 @@ declare -a TEMPLATES=(
 TOTAL=$(( TOTAL * ${#TEMPLATES[@]} ))
 
 declare -a VIEWS=(
-                  "view_1_ccrop"
+                #   "view_1_ccrop"
                 #   "view_10_valview_10_randomcrop"
-                #   "view_10_randomcrop"
+                  "view_10_randomcrop"
                 # "view_2_randomflip"
+                # "view_1_flip"
+                # "view_1_rcrop"
                 #   "view_100_rcrop"
                 #   "view_100_valview_100_rcrop"
                  )
 TOTAL=$(( TOTAL * ${#VIEWS[@]} ))
 
 declare -a DATASETS=(
-                     "imagenet"
+                    #  "imagenet"
                     #  "caltech101"
                     #  "dtd"
                     #  "eurosat"
@@ -52,29 +54,29 @@ declare -a DATASETS=(
                     #  "food101"
                     #  "oxford_flowers"
                     #  "oxford_pets"
-                    #  "stanford_cars"
+                     "stanford_cars"
                     #  "sun397"
                     #  "ucf101"
                      )
 TOTAL=$(( TOTAL * ${#DATASETS[@]} ))
 
 declare -a ALL_SHOTS=(
-    # "1"
-    # "2"
-    # "4"
-    # "8"
+    "1"
+    "2"
+    "4"
+    "8"
     "16"
     # "imagenet_all"
 )
 TOTAL=$(( TOTAL * ${#ALL_SHOTS[@]} ))
 
 declare -a ALL_SEEDS=(
-    # "1"
-    # "2"
-    # "3"
+    "1"
+    "2"
+    "3"
     # "4"
     # "5"
-    "6"
+    # "6"
 )
 TOTAL=$(( TOTAL * ${#ALL_SEEDS[@]} ))
 

@@ -1,0 +1,3 @@
+ARCHITECTURE:
+  HEAD: "mlp_zeroshot"
+  BIAS: False

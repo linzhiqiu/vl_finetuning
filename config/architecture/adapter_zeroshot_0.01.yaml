@@ -1,0 +1,3 @@
+ARCHITECTURE:
+  HEAD: "adapter_zeroshot_0.01"
+  BIAS: False

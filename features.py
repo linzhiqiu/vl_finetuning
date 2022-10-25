@@ -1,4 +1,5 @@
 import os, argparse
+import pdb
 import torch
 
 from engine.tools.utils import makedirs, set_random_seed, collect_env_info
@@ -31,6 +32,7 @@ transforms_dict = {
     'randomcrop' : ['random_crop', 'random_flip', 'normalize'],
     'ccrop' : ['center_crop', 'normalize'],
     'rflip' : ['center_crop', 'random_flip', 'normalize'],
+    'flip': ["center_crop", "flip", "normalize"],
 }
 def get_transform_name(cfg):
     for transform_name, transform_list in transforms_dict.items():
@@ -282,6 +284,7 @@ def main(args):
 
     makedirs(os.path.dirname(image_features_path))
     
+    # import pdb; pdb.set_trace()
     if os.path.exists(image_features_path):
         print(f"Features already saved at {image_features_path}")
     else:
@@ -299,6 +302,7 @@ def main(args):
             },
         }
         transform = build_transform(cfg, is_train=True)
+        # import pdb; pdb.set_trace()
         # import pdb; pdb.set_trace()
         print(f"Extracting features for train split ...")
         image_features['train'] = extract_features(

@@ -13,20 +13,18 @@ declare -a TEXTS=(
 TOTAL=$(( TOTAL * ${#TEXTS[@]} ))
 
 declare -a TEMPLATES=(
-                    #   "classname"
-                    #   "default" 
-                    #   "extra"
-                    #   "extra_default"
-                    #   "single"
-                    # "ensemble_same"
-                    "ensemble_all"
+                      "classname"
+                      "single"
+                      "tip_adapter"
+                      "ensemble_all"
                      )
 TOTAL=$(( TOTAL * ${#TEMPLATES[@]} ))
 
 declare -a VIEWS=(
-                #   "view_10_valview_10_randomcrop" # not good
-                  "view_1_ccrop"
-                #   "view_100_valview_100_rcrop" # don't run this now
+                "view_1_rcrop"
+                "view_1_flip"
+                "view_10_randomcrop"
+                #   "view_1_ccrop"
                  )
 TOTAL=$(( TOTAL * ${#VIEWS[@]} ))
                   
@@ -40,8 +38,8 @@ declare -a DATASETS=(
                     #  "fgvc_aircraft"
                     #  "stanford_cars"
                     #  "oxford_pets"
-                     "ucf101" 
-                    #  "sun397"
+                     "sun397"
+                    #  "ucf101" 
                      )
 TOTAL=$(( TOTAL * ${#DATASETS[@]} ))
 
@@ -50,7 +48,7 @@ declare -a CROSS_MODALS=(
                         #  "text_ratio_0.2"
                         #  "text_ratio_0.8"
                         #  "text_ratio_0.5"
-                        #  "text_ratio_0"
+                         "text_ratio_0"
                         "normtext_ratio_0.5"
                         # "normtext_ratio_0.8"
                         # "normtext_ratio_0.2"
@@ -151,7 +149,7 @@ do
                                             echo "ARCH: $ARCH"
                                             (( COUNTER++ ))
                                             echo "COUNTER: $COUNTER/$TOTAL"
-                                            python learn_logit_ablation.py \
+                                            python image_aug.py \
                                             --dataset-config-file config/datasets/${DATASET}.yaml \
                                             --few-shot-config-file config/few_shot/shot_${SHOTS}.yaml \
                                             --image-encoder-config-file config/features/image/${IMAGE}.yaml \
@@ -178,4 +176,4 @@ done
 
 echo "Start testing..."
 
-python eval_ensemble_all_linear.py
+python eval_image_aug.py

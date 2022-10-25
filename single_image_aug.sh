@@ -17,21 +17,24 @@ declare -a TEMPLATES=(
                     #   "default" 
                     #   "extra"
                     #   "extra_default"
-                    #   "single"
+                      "single"
+                    #   "tip_adapter"
                     # "ensemble_same"
-                    "ensemble_all"
                      )
 TOTAL=$(( TOTAL * ${#TEMPLATES[@]} ))
 
 declare -a VIEWS=(
                 #   "view_10_valview_10_randomcrop" # not good
-                  "view_1_ccrop"
+                # "view_10_randomcrop" # not good
+                #   "view_1_ccrop"
+                "view_1_flip"
+                "view_1_rcrop"
                 #   "view_100_valview_100_rcrop" # don't run this now
                  )
 TOTAL=$(( TOTAL * ${#VIEWS[@]} ))
                   
 declare -a DATASETS=(
-                    #  "imagenet"
+                     "imagenet"
                     #  "caltech101"
                     #  "food101"
                     #  "eurosat"
@@ -40,7 +43,7 @@ declare -a DATASETS=(
                     #  "fgvc_aircraft"
                     #  "stanford_cars"
                     #  "oxford_pets"
-                     "ucf101" 
+                    #  "ucf101" 
                     #  "sun397"
                      )
 TOTAL=$(( TOTAL * ${#DATASETS[@]} ))
@@ -95,8 +98,8 @@ TOTAL=$(( TOTAL * ${#ALL_SHOTS[@]} ))
 
 declare -a ALL_SEEDS=(
     "1"
-    "2"
-    "3"
+    # "2"
+    # "3"
 )
 TOTAL=$(( TOTAL * ${#ALL_SEEDS[@]} ))
     
@@ -151,7 +154,7 @@ do
                                             echo "ARCH: $ARCH"
                                             (( COUNTER++ ))
                                             echo "COUNTER: $COUNTER/$TOTAL"
-                                            python learn_logit_ablation.py \
+                                            python image_aug.py \
                                             --dataset-config-file config/datasets/${DATASET}.yaml \
                                             --few-shot-config-file config/few_shot/shot_${SHOTS}.yaml \
                                             --image-encoder-config-file config/features/image/${IMAGE}.yaml \
@@ -178,4 +181,4 @@ done
 
 echo "Start testing..."
 
-python eval_ensemble_all_linear.py
+python eval_image_aug.py

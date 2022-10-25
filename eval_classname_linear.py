@@ -40,10 +40,11 @@ from final_logit_ablation import get_hyperparams_str, get_save_dir, get_valid_ba
 EVAL_MODE = 'linear'
 if EVAL_MODE == 'linear':
     #### Partial START
-    EVAL_DIR = "./eval_ensemble_all_linear"
+    EVAL_DIR = "./eval_classname_linear"
 
     IMAGES = [
         "rn50_layer_0",
+        # "vitb16_layer_0",
     ]
 
     TEXTS = [
@@ -51,8 +52,8 @@ if EVAL_MODE == 'linear':
     ]
 
     TEMPLATES = [
-        # "single",
-        "ensemble_all"
+        # "classname",
+        "classname"
     ]
 
     VIEWS = [
@@ -176,7 +177,7 @@ def setup_cfg(dataset,
     # 11. Set the seed
     cfg.SEED = seed
 
-    # # cfg.LOGREG_MINIBATCH_DIR = "/scratch/vl"
+    # cfg.LOGREG_MINIBATCH_DIR = "/scratch/vl"
     # cfg.LOGREG_MINIBATCH_DIR = "/ssd0/vl"
 
     cfg.freeze()
@@ -429,7 +430,7 @@ def main():
                                                                     all_dataset_finished = False
                                                                     all_seed_finished = False
                                                                     all_hyper_finished = False
-                                                                    import pdb; pdb.set_trace()
+                                                                    # import pdb; pdb.set_trace()
                                                                     continue
                                                                 else:
                                                                     test_result_dict = {}

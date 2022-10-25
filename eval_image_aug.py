@@ -34,13 +34,13 @@ from features import get_backbone_name, \
                      get_test_features_path, \
                      get_image_encoder_dir, \
                      get_text_encoder_dir
-from final_logit_ablation import get_hyperparams_str, get_save_dir, get_valid_batch_sizes, validate
+from image_aug import get_hyperparams_str, get_save_dir, get_valid_batch_sizes, validate
 
 
 EVAL_MODE = 'linear'
 if EVAL_MODE == 'linear':
     #### Partial START
-    EVAL_DIR = "./eval_ensemble_all_linear"
+    EVAL_DIR = "./eval_image_aug"
 
     IMAGES = [
         "rn50_layer_0",
@@ -51,13 +51,18 @@ if EVAL_MODE == 'linear':
     ]
 
     TEMPLATES = [
-        # "single",
-        "ensemble_all"
+        "single",
+        "ensemble_all",
+        "tip_adapter",
+        "classname",
     ]
 
     VIEWS = [
         # "view_10_valview_10_randomcrop",
-        "view_1_ccrop",
+        # "view_1_ccrop",
+        "view_1_flip",
+        "view_1_rcrop",
+        "view_10_randomcrop",
         # "view_100_valview_100_rcrop",
     ]
 
@@ -80,7 +85,7 @@ if EVAL_MODE == 'linear':
         # "normtext_ratio_0.2",
         # "normtext_ratio_0.8",
         # "text_ratio_0.5",
-        # "text_ratio_0",
+        "text_ratio_0",
     ]
 
     LOGITS = [
@@ -129,6 +134,7 @@ if True:
     random.shuffle(LOGITS)
     random.shuffle(SEEDS)
     random.shuffle(SHOTS)
+    random.shuffle(TEMPLATES)
 
 def setup_cfg(dataset,
               shots,
@@ -429,7 +435,7 @@ def main():
                                                                     all_dataset_finished = False
                                                                     all_seed_finished = False
                                                                     all_hyper_finished = False
-                                                                    import pdb; pdb.set_trace()
+                                                                    # import pdb; pdb.set_trace()
                                                                     continue
                                                                 else:
                                                                     test_result_dict = {}

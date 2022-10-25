@@ -14,6 +14,7 @@ from engine.transforms.randaugment import RandAugment, RandAugment2, RandAugment
 
 AVAI_CHOICES = [
     "random_flip",
+    'flip',
     "random_resized_crop",
     "normalize",
     "instance_norm",
@@ -244,6 +245,10 @@ def _build_transform_train(cfg, choices, target_size, normalize):
     if "random_flip" in choices:
         print("+ random flip")
         tfm_train += [RandomHorizontalFlip()]
+
+    if "flip" in choices:
+        print("+ flip")
+        tfm_train += [RandomHorizontalFlip(p=1.0)]
 
     if "imagenet_policy" in choices:
         print("+ imagenet policy")

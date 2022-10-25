@@ -297,38 +297,38 @@ CLASS_MAP = {
     #         977: "4-195497-A-11.wav",  # sandbar -- i used sea waves
     #     }
     # },
-    # 'imagenet_27_new_randomk': {
-    #     'dataset': 'imagenet',
-    #     'class_map': {
-    #         175: "3-170015-A-0.wav",  # Otterhound
-    #         19: "3-156581-A-14.wav",  # chickadee
-    #         882: "5-182010-A-36.wav",  # vacuum cleaner
-    #         491: "5-170338-B-41.wav",  # chainsaw
-    #         404: "2-96654-A-47.wav",  # airliner
-    #         673: "5-232802-A-31.wav",  # computer mouse
-    #         466: "2-122066-B-45.wav",  # high-speed train
-    #         349: "1-49409-B-8.wav",  # big-horn sheep
-    #         530: "1-67033-A-37.wav", # digital clock
-    #         508: "4-181708-A-32.wav",  # computer keyboard
-    #         31: "1-15689-B-4.wav",  # tree frog
-    #         308: "4-143118-A-7.wav",  # fly
-    #         8: "3-171281-A-6.wav",  # hen
-    #         341: "3-253084-C-2.wav",  # pig
-    #         897: "2-102567-A-35.wav",  # washing machine
-    #         892: "5-201194-A-38.wav",  # wall clock
-    #         7: "5-194930-A-1.wav",  # rooster
-    #         285: "1-34094-A-5.wav",  # Egyptian cat
-    #         312: "4-172143-A-13.wav",  # cricket
-    #         473: "3-148932-A-34.wav",  # can opener
-    #         977: "4-195497-A-11.wav",  # sandbar -- i used sea waves
-    #         497: "2-78381-A-46.wav",  # church bells
-    #         898: "4-188191-A-29.wav",  # water bottle -- i used drinking sound
-    #         556: "3-157187-A-12.wav",  # fire screen
-    #         861: "3-108791-A-18.wav",  # toilet seat
-    #         896: "2-68595-A-15.wav",  # sink
-    #         899: "4-182839-A-17.wav", # water jug
-    #     }
-    # },
+    'imagenet_27_new_randomk': {
+        'dataset': 'imagenet',
+        'class_map': {
+            175: "3-170015-A-0.wav",  # Otterhound
+            19: "3-156581-A-14.wav",  # chickadee
+            882: "5-182010-A-36.wav",  # vacuum cleaner
+            491: "5-170338-B-41.wav",  # chainsaw
+            404: "2-96654-A-47.wav",  # airliner
+            673: "5-232802-A-31.wav",  # computer mouse
+            466: "2-122066-B-45.wav",  # high-speed train
+            349: "1-49409-B-8.wav",  # big-horn sheep
+            530: "1-67033-A-37.wav", # digital clock
+            508: "4-181708-A-32.wav",  # computer keyboard
+            31: "1-15689-B-4.wav",  # tree frog
+            308: "4-143118-A-7.wav",  # fly
+            8: "3-171281-A-6.wav",  # hen
+            341: "3-253084-C-2.wav",  # pig
+            897: "2-102567-A-35.wav",  # washing machine
+            892: "5-201194-A-38.wav",  # wall clock
+            7: "5-194930-A-1.wav",  # rooster
+            285: "1-34094-A-5.wav",  # Egyptian cat
+            312: "4-172143-A-13.wav",  # cricket
+            473: "3-148932-A-34.wav",  # can opener
+            977: "4-195497-A-11.wav",  # sandbar -- i used sea waves
+            497: "2-78381-A-46.wav",  # church bells
+            898: "4-188191-A-29.wav",  # water bottle -- i used drinking sound
+            556: "3-157187-A-12.wav",  # fire screen
+            861: "3-108791-A-18.wav",  # toilet seat
+            896: "2-68595-A-15.wav",  # sink
+            899: "4-182839-A-17.wav", # water jug
+        }
+    },
     'imagenet_19_new_randomk': {
         'dataset': 'imagenet',
         'class_map': {
@@ -344,6 +344,27 @@ CLASS_MAP = {
             508: "4-181708-A-32.wav",  # computer keyboard
             31: "1-15689-B-4.wav",  # tree frog
             308: "4-143118-A-7.wav",  # fly
+            8: "3-171281-A-6.wav",  # hen
+            341: "3-253084-C-2.wav",  # pig
+            897: "2-102567-A-35.wav",  # washing machine
+            892: "5-201194-A-38.wav",  # wall clock
+            7: "5-194930-A-1.wav",  # rooster
+            285: "1-34094-A-5.wav",  # Egyptian cat
+            312: "4-172143-A-13.wav",  # cricket
+        }
+    },
+    'imagenet_16_new_randomk': {
+        'dataset': 'imagenet',
+        'class_map': {
+            882: "5-182010-A-36.wav",  # vacuum cleaner
+            491: "5-170338-B-41.wav",  # chainsaw
+            404: "2-96654-A-47.wav",  # airliner
+            673: "5-232802-A-31.wav",  # computer mouse
+            466: "2-122066-B-45.wav",  # high-speed train
+            349: "1-49409-B-8.wav",  # big-horn sheep
+            530: "1-67033-A-37.wav", # digital clock
+            508: "4-181708-A-32.wav",  # computer keyboard
+            31: "1-15689-B-4.wav",  # tree frog
             8: "3-171281-A-6.wav",  # hen
             341: "3-253084-C-2.wav",  # pig
             897: "2-102567-A-35.wav",  # washing machine
@@ -976,9 +997,11 @@ def main():
 
         # 4: few-shot with images+audio
         for shots in [1, 2, 4, 8, 16]:
+            image_as_classifier_results = []
             for architecture, cross_modal in [('linear', 'text_ratio_0'), ('linear_zeroshot', 'normtext_ratio_0.5')]:
                 seeds_dict = {seed : {} for seed in SEEDS}
                 seeds_dict_last_iter = {seed : {} for seed in SEEDS}
+                # seeds_dict_image_as_classifier = {seed : None for seed in SEEDS}
                 for seed in SEEDS:
                     cfg = setup_training_cfg(original_dataset,
                                              shots,  # shots
@@ -1010,8 +1033,8 @@ def main():
                         print(f"Using image as classifier for {dataset} with {shots} shots")
                         test_results = evaluate(
                             cfg, image_train_dataset, test_dataset)
-                        all_dataset_dict['image_as_classifier'][f"{dataset}_{shots}"] = test_results
-                    # continue
+                        image_as_classifier_results.append(test_results)
+                    
 
                     save_dir = os.path.join(dataset_dir, f'{shots}_shot_{architecture}_{cross_modal}')
                     makedirs(save_dir)
@@ -1152,9 +1175,14 @@ def main():
                     'test_acc_mean': all_seeds_dict['mean'], 'test_acc_std': all_seeds_dict['std']}
                 all_dataset_dict['last_iter'][f"{dataset}_{architecture}_{cross_modal}_shot_{shots}"] = {
                     'test_acc_mean': all_seeds_dict_last_iter['mean'], 'test_acc_std': all_seeds_dict_last_iter['std']}
+
+                all_dataset_dict['image_as_classifier'][f"{dataset}_{shots}"] = {
+                    'test_acc_mean': np.mean(image_as_classifier_results), 'test_acc_std': np.std(image_as_classifier_results)
+                }
     all_dataset_path = os.path.join(result_dir, 'all_dataset_dict.pt')
     import json
     print(json.dumps(all_dataset_dict, indent=2))
+
     import pdb; pdb.set_trace()
     torch.save(all_dataset_dict, all_dataset_path)
 

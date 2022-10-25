@@ -3,7 +3,7 @@ WORKERS=0
 
 TOTAL=1
 declare -a IMAGES=(
-                   "rn50_layer_0"
+                   "rn50_layer_1"
                 )
 TOTAL=$(( TOTAL * ${#IMAGES[@]} ))
 
@@ -13,19 +13,19 @@ declare -a TEXTS=(
 TOTAL=$(( TOTAL * ${#TEXTS[@]} ))
 
 declare -a TEMPLATES=(
-                    #   "classname"
-                    #   "default" 
-                    #   "extra"
-                    #   "extra_default"
-                    #   "single"
-                    # "ensemble_same"
-                    "ensemble_all"
+                      "single"
+                      "classname"
+                      "tip_adapter"
+                      "ensemble_all"
                      )
 TOTAL=$(( TOTAL * ${#TEMPLATES[@]} ))
 
 declare -a VIEWS=(
                 #   "view_10_valview_10_randomcrop" # not good
-                  "view_1_ccrop"
+                #   "view_1_ccrop"
+                "view_10_randomcrop"
+                "view_1_flip"
+                "view_1_rcrop"
                 #   "view_100_valview_100_rcrop" # don't run this now
                  )
 TOTAL=$(( TOTAL * ${#VIEWS[@]} ))
@@ -41,7 +41,7 @@ declare -a DATASETS=(
                     #  "stanford_cars"
                     #  "oxford_pets"
                      "ucf101" 
-                    #  "sun397"
+                     "sun397"
                      )
 TOTAL=$(( TOTAL * ${#DATASETS[@]} ))
 
@@ -50,8 +50,8 @@ declare -a CROSS_MODALS=(
                         #  "text_ratio_0.2"
                         #  "text_ratio_0.8"
                         #  "text_ratio_0.5"
-                        #  "text_ratio_0"
                         "normtext_ratio_0.5"
+                         "text_ratio_0"
                         # "normtext_ratio_0.8"
                         # "normtext_ratio_0.2"
                         )
@@ -60,8 +60,8 @@ TOTAL=$(( TOTAL * ${#CROSS_MODALS[@]} ))
 declare -a LOGITS=(
     # "fnorm_True_hnorm_False_logit_Learn_default"
     # "fnorm_False_hnorm_False_logit_Learn_default"
-    # "fnorm_True_hnorm_False_logit_Fixed_4"
-    "fnorm_True_hnorm_False_logit_Fixed_default"
+    "fnorm_True_hnorm_False_logit_Fixed_4"
+    # "fnorm_True_hnorm_False_logit_Fixed_default"
     # "fnorm_True_hnorm_False_logit_Fixed_4.2"
     # "fnorm_True_hnorm_False_logit_Fixed_3.6"
     # "fnorm_True_hnorm_False_logit_Learn_4"
@@ -70,7 +70,7 @@ declare -a LOGITS=(
 TOTAL=$(( TOTAL * ${#LOGITS[@]} ))
 
 declare -a HYPERS=(
-                   "adamw_2"
+                   "partial_adamw_fast"
                   )
 TOTAL=$(( TOTAL * ${#HYPERS[@]} ))
 
@@ -151,7 +151,7 @@ do
                                             echo "ARCH: $ARCH"
                                             (( COUNTER++ ))
                                             echo "COUNTER: $COUNTER/$TOTAL"
-                                            python learn_logit_ablation.py \
+                                            python image_aug_partial.py \
                                             --dataset-config-file config/datasets/${DATASET}.yaml \
                                             --few-shot-config-file config/few_shot/shot_${SHOTS}.yaml \
                                             --image-encoder-config-file config/features/image/${IMAGE}.yaml \
@@ -178,4 +178,4 @@ done
 
 echo "Start testing..."
 
-python eval_ensemble_all_linear.py
+python eval_image_aug_partial.py

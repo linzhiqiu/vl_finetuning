@@ -274,12 +274,14 @@ imagenet-rendition/
 - Create a folder named `esc-50/` under `$DATA`.
 - Download the master.zip from <https://github.com/karolpiczak/ESC-50> (or run `wget https://github.com/karoldvl/ESC-50/archive/master.zip`)
 - Extract it to `$DATA/esc-50/`.
-<!-- - Copy `$DATA/imagenet/classnames.txt` to `$DATA/imagenet-rendition/`. -->
+- Download AudioCLIP checkpoint to this folder via `wget https://github.com/AndreyGuzhov/AudioCLIP/releases/download/v0.1/AudioCLIP-Partial-Training.pt`
+<!-- - Download word embedding to this folder via `wget https://github.com/AndreyGuzhov/AudioCLIP/releases/download/v0.1/bpe_simple_vocab_16e6.txt.gz` -->
 
 The directory structure should look like
 
 ```
 esc-50/
-|–– imagenet-r/ # contains 200 folders whose names have the format of n*
-|–– classnames.txt
+|–– ESC-50-master/ # contains ESC-50 original dataset
+|–– AudioCLIP-Partial-Training.pt
+<!-- |–– bpe_simple_vocab_16e6.txt.gz -->
 ```

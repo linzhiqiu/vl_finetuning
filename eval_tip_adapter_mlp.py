@@ -37,13 +37,14 @@ from features import get_backbone_name, \
 from final_logit_ablation import get_hyperparams_str, get_save_dir, get_valid_batch_sizes, validate
 
 
-EVAL_MODE = 'linear'
-if EVAL_MODE == 'linear':
+EVAL_MODE = 'mlp'
+if EVAL_MODE == 'mlp':
     #### Partial START
-    EVAL_DIR = "./eval_ensemble_all_linear"
+    EVAL_DIR = "./eval_tip_adapter_mlp"
 
     IMAGES = [
         "rn50_layer_0",
+        # "vitb16_layer_0",
     ]
 
     TEXTS = [
@@ -52,7 +53,8 @@ if EVAL_MODE == 'linear':
 
     TEMPLATES = [
         # "single",
-        "ensemble_all"
+        # "single"
+        "tip_adapter",
     ]
 
     VIEWS = [
@@ -103,11 +105,17 @@ if EVAL_MODE == 'linear':
 
     HYPERS = [
         # "partial_adamw_fast"
-        "adamw_2"
+        # "adamw_2"
+        "mlp_adamw"
     ]
 
     ARCHITECTURES = [
-        "linear_zeroshot",
+        # "linear_zeroshot",
+        # # "tip_adapter_zeroshot_norm",
+          "adapter_zeroshot",
+        #   "adapter_zeroshot_debug",
+        #   "adapter_zeroshot_0.05",
+        # "adapter_zeroshot_0.01"
     ]
 
     SEEDS = [
@@ -129,6 +137,7 @@ if True:
     random.shuffle(LOGITS)
     random.shuffle(SEEDS)
     random.shuffle(SHOTS)
+    random.shuffle(ARCHITECTURES)
 
 def setup_cfg(dataset,
               shots,
@@ -176,7 +185,7 @@ def setup_cfg(dataset,
     # 11. Set the seed
     cfg.SEED = seed
 
-    # # cfg.LOGREG_MINIBATCH_DIR = "/scratch/vl"
+    # cfg.LOGREG_MINIBATCH_DIR = "/scratch/vl"
     # cfg.LOGREG_MINIBATCH_DIR = "/ssd0/vl"
 
     cfg.freeze()
@@ -429,7 +438,7 @@ def main():
                                                                     all_dataset_finished = False
                                                                     all_seed_finished = False
                                                                     all_hyper_finished = False
-                                                                    import pdb; pdb.set_trace()
+                                                                    # import pdb; pdb.set_trace()
                                                                     continue
                                                                 else:
                                                                     test_result_dict = {}

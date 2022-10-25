@@ -4,6 +4,7 @@ WORKERS=0
 TOTAL=1
 declare -a IMAGES=(
                    "rn50_layer_0"
+                #    "vitb16_layer_0"
                 )
 TOTAL=$(( TOTAL * ${#IMAGES[@]} ))
 
@@ -13,13 +14,12 @@ declare -a TEXTS=(
 TOTAL=$(( TOTAL * ${#TEXTS[@]} ))
 
 declare -a TEMPLATES=(
-                    #   "classname"
+                      "classname"
                     #   "default" 
                     #   "extra"
                     #   "extra_default"
                     #   "single"
                     # "ensemble_same"
-                    "ensemble_all"
                      )
 TOTAL=$(( TOTAL * ${#TEMPLATES[@]} ))
 
@@ -40,8 +40,8 @@ declare -a DATASETS=(
                     #  "fgvc_aircraft"
                     #  "stanford_cars"
                     #  "oxford_pets"
-                     "ucf101" 
-                    #  "sun397"
+                    #  "ucf101" 
+                     "sun397"
                      )
 TOTAL=$(( TOTAL * ${#DATASETS[@]} ))
 
@@ -178,4 +178,4 @@ done
 
 echo "Start testing..."
 
-python eval_ensemble_all_linear.py
+python eval_classname_linear.py

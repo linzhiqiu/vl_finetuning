@@ -4,6 +4,7 @@ WORKERS=0
 TOTAL=1
 declare -a IMAGES=(
                    "rn50_layer_0"
+                #    "vitb16_layer_0"
                 )
 TOTAL=$(( TOTAL * ${#IMAGES[@]} ))
 
@@ -18,8 +19,8 @@ declare -a TEMPLATES=(
                     #   "extra"
                     #   "extra_default"
                     #   "single"
+                    "tip_adapter"
                     # "ensemble_same"
-                    "ensemble_all"
                      )
 TOTAL=$(( TOTAL * ${#TEMPLATES[@]} ))
 
@@ -40,8 +41,8 @@ declare -a DATASETS=(
                     #  "fgvc_aircraft"
                     #  "stanford_cars"
                     #  "oxford_pets"
-                     "ucf101" 
-                    #  "sun397"
+                    #  "ucf101" 
+                     "sun397"
                      )
 TOTAL=$(( TOTAL * ${#DATASETS[@]} ))
 
@@ -70,7 +71,7 @@ declare -a LOGITS=(
 TOTAL=$(( TOTAL * ${#LOGITS[@]} ))
 
 declare -a HYPERS=(
-                   "adamw_2"
+                   "mlp_adamw"
                   )
 TOTAL=$(( TOTAL * ${#HYPERS[@]} ))
 
@@ -79,7 +80,10 @@ declare -a ARCHITECTURES=(
                         #   "linear_zeroshot_bias"
                         #   "mlp_bias"
                         #   "linear"
-                          "linear_zeroshot"
+                          "adapter_zeroshot"
+                        #   "adapter_zeroshot_debug"
+                        #   "adapter_zeroshot_0.05"
+                        #   "adapter_zeroshot_0.01"
                         #   "mlp"
                          )
 TOTAL=$(( TOTAL * ${#ARCHITECTURES[@]} ))
@@ -178,4 +182,4 @@ done
 
 echo "Start testing..."
 
-python eval_ensemble_all_linear.py
+python eval_tip_adapter_mlp.py

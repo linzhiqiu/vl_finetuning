@@ -61,8 +61,8 @@ TOTAL=$(( TOTAL * ${#CROSS_MODALS[@]} ))
 declare -a LOGITS=(
     # "fnorm_True_hnorm_False_logit_Learn_default"
     # "fnorm_False_hnorm_False_logit_Learn_default"
-    "fnorm_True_hnorm_False_logit_Fixed_4"
-    # "fnorm_True_hnorm_False_logit_Fixed_default"
+    # "fnorm_True_hnorm_False_logit_Fixed_4"
+    "fnorm_True_hnorm_False_logit_Fixed_default"
     # "fnorm_True_hnorm_False_logit_Fixed_4.2"
     # "fnorm_True_hnorm_False_logit_Fixed_3.6"
     # "fnorm_True_hnorm_False_logit_Learn_4"

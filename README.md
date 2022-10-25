@@ -93,6 +93,15 @@ bash logreg_minibatch.sh
 python test_features.py --dataset-config-file config/datasets/dtd_test.yaml --image-encoder-config-file config/features/image/rn50_layer_0.yaml --view-config-file config/features/view/view_1_ccrop.yaml
 ```
 
+# AudioCLIP feature extraction for ESC-50 dataset
+We follow the instruction offered in official AudioCLIP codebase to extract the feature. We notice that the AudioCLIP head does not produce good audio features with eval() mode, so we extract the mode in train() mode with a batch size of 10. The [ESC-50 dataset](https://github.com/karolpiczak/ESC-50) recommended 5-fold cross validation because the audio samples can be correlated within each of the 5 folds, so we follow the practice to offer 5 train/test split of ESC-50. For each split, one fold is used as trainset (400 audio samples per fold), and the rest 4 folds is used for evaluation.
+
+# Audio classification with AudioCLIP features
+
+```
+python audio_classification.py
+```
+
 <!-- ## How to Run
 
 Click a paper below to see the detailed instructions on how to run the code to reproduce the results.

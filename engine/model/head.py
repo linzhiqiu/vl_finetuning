@@ -2,8 +2,25 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-AVAI_HEADS = ['linear', 'linear_zeroshot', 'linear_zeroshot_norm', 'mlp']
+AVAI_HEADS = ['linear', 'linear_zeroshot', 'linear_zeroshot_norm',
+              'mlp', 'mlp_zeroshot', 'adapter_zeroshot', 'adapter_zeroshot_debug', 'adapter_zeroshot_0.05', 'adapter_zeroshot_0.01']
 
+
+class Adapter(nn.Module):
+    def __init__(self, c_in, reduction=4, residual_ratio=0.2):
+        super(Adapter, self).__init__()
+        self.residual_ratio = residual_ratio
+        self.fc = nn.Sequential(
+            nn.Linear(c_in, c_in // reduction, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(c_in // reduction, c_in, bias=False),
+            nn.ReLU(inplace=True)
+        )
+
+    def forward(self, x):
+        a = self.fc(x)
+        x = self.residual_ratio * a + (1 - self.residual_ratio) * x
+        return x
 
 def get_zero_shot_weights(text_dataset, num_classes, in_features):
     weights = torch.zeros(num_classes, in_features)
@@ -50,6 +67,59 @@ def make_classifier_head(head_type, backbone_type, bias, text_dataset):
             nn.ReLU(),
             nn.Linear(in_features // 4, num_classes,
                       bias=bias),
+        )
+    elif head_type == 'mlp_zeroshot':
+        linear_head = nn.Linear(in_features, num_classes, bias=bias)
+        linear_head.weight.data = get_zero_shot_weights(
+            text_dataset, num_classes, in_features)
+        linear_head.weight.data = F.normalize(linear_head.weight.data, dim=1)
+        head = nn.Sequential(
+            nn.Linear(in_features, in_features // 4, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(in_features // 4, in_features, bias=False),
+            nn.ReLU(inplace=True),
+            linear_head
+        )
+    elif head_type == 'adapter_zeroshot':
+        linear_head = nn.Linear(in_features, num_classes, bias=bias)
+        linear_head.weight.data = get_zero_shot_weights(
+            text_dataset, num_classes, in_features)
+        linear_head.weight.data = F.normalize(linear_head.weight.data, dim=1)
+        # adapter = Adapter(in_features, residual_ratio=0.2)
+        adapter = Adapter(in_features, residual_ratio=0.2)
+        head = nn.Sequential(
+            adapter,
+            linear_head
+        )
+    elif head_type == 'adapter_zeroshot_debug':
+        linear_head = nn.Linear(in_features, num_classes, bias=bias)
+        linear_head.weight.data = get_zero_shot_weights(
+            text_dataset, num_classes, in_features)
+        linear_head.weight.data = F.normalize(linear_head.weight.data, dim=1)
+        adapter = Adapter(in_features, residual_ratio=0.)
+        head = nn.Sequential(
+            adapter,
+            linear_head
+        )
+    elif head_type == 'adapter_zeroshot_0.05':
+        linear_head = nn.Linear(in_features, num_classes, bias=bias)
+        linear_head.weight.data = get_zero_shot_weights(
+            text_dataset, num_classes, in_features)
+        linear_head.weight.data = F.normalize(linear_head.weight.data, dim=1)
+        adapter = Adapter(in_features, residual_ratio=0.05)
+        head = nn.Sequential(
+            adapter,
+            linear_head
+        )
+    elif head_type == 'adapter_zeroshot_0.01':
+        linear_head = nn.Linear(in_features, num_classes, bias=bias)
+        linear_head.weight.data = get_zero_shot_weights(
+            text_dataset, num_classes, in_features)
+        linear_head.weight.data = F.normalize(linear_head.weight.data, dim=1)
+        adapter = Adapter(in_features, residual_ratio=0.01)
+        head = nn.Sequential(
+            adapter,
+            linear_head
         )
     else:
         raise ValueError(f"Invalid head: {head_type}")

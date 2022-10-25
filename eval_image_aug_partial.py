@@ -34,16 +34,17 @@ from features import get_backbone_name, \
                      get_test_features_path, \
                      get_image_encoder_dir, \
                      get_text_encoder_dir
-from final_logit_ablation import get_hyperparams_str, get_save_dir, get_valid_batch_sizes, validate
+from image_aug import get_hyperparams_str, get_save_dir, get_valid_batch_sizes, validate
 
 
-EVAL_MODE = 'linear'
-if EVAL_MODE == 'linear':
+EVAL_MODE = 'partial'
+if EVAL_MODE == 'partial':
     #### Partial START
-    EVAL_DIR = "./eval_ensemble_all_linear"
+    EVAL_DIR = "./eval_image_aug_partial"
 
     IMAGES = [
-        "rn50_layer_0",
+        "rn50_layer_1",
+        # "vitb16_layer_1",
     ]
 
     TEXTS = [
@@ -52,7 +53,10 @@ if EVAL_MODE == 'linear':
 
     TEMPLATES = [
         # "single",
-        "ensemble_all"
+        "single",
+        "ensemble_all",
+        "classname",
+        "tip_adapter"
     ]
 
     VIEWS = [
@@ -88,8 +92,8 @@ if EVAL_MODE == 'linear':
         # "fnorm_False_hnorm_True_logit_Fixed",
         # "fnorm_True_hnorm_False_logit_Fixed",
         # "fnorm_True_hnorm_True_logit_Fixed",
-        # "fnorm_True_hnorm_False_logit_Fixed_4",
-        "fnorm_True_hnorm_False_logit_Fixed_default",
+        "fnorm_True_hnorm_False_logit_Fixed_4",
+        # "fnorm_True_hnorm_False_logit_Fixed_default",
         # "fnorm_True_hnorm_False_logit_Learn_4",
         # "fnorm_True_hnorm_False_logit_Fixed_3.6",
         # "fnorm_True_hnorm_False_logit_Fixed_4.2",
@@ -102,8 +106,8 @@ if EVAL_MODE == 'linear':
     ]
 
     HYPERS = [
-        # "partial_adamw_fast"
-        "adamw_2"
+        "partial_adamw_fast"
+        # "adamw_2"
     ]
 
     ARCHITECTURES = [
@@ -176,7 +180,7 @@ def setup_cfg(dataset,
     # 11. Set the seed
     cfg.SEED = seed
 
-    # # cfg.LOGREG_MINIBATCH_DIR = "/scratch/vl"
+    # cfg.LOGREG_MINIBATCH_DIR = "/scratch/vl"
     # cfg.LOGREG_MINIBATCH_DIR = "/ssd0/vl"
 
     cfg.freeze()
@@ -373,23 +377,10 @@ def main():
                                                 if torch.cuda.is_available() and cfg.USE_CUDA:
                                                     torch.backends.cudnn.benchmark = True
 
-                                                image_encoder_dir = get_image_encoder_dir(cfg)
-                                                image_encoder_path = os.path.join(image_encoder_dir, "encoder.pth")
-                                                assert os.path.exists(image_encoder_path), image_encoder_path
-
-                                                text_encoder_dir = get_text_encoder_dir(cfg)
-                                                text_encoder_path = os.path.join(text_encoder_dir, "encoder.pth")
-                                                assert os.path.exists(text_encoder_path), text_encoder_path
-
                                                 text_features_path = get_text_features_path(cfg)
                                                 text_features = torch.load(text_features_path)
                                                 text_dataset = TextTensorDataset(
                                                     text_features['features'], text_features['labels'], text_features['eot_indices'])
-
-                                                test_features_path = get_test_features_path(cfg)
-                                                test_features = torch.load(test_features_path)
-                                                test_dataset = TensorDataset(
-                                                    test_features['features'], test_features['labels'])
 
                                                 save_dir = get_save_dir(cfg)
                                                 image_features_path = get_image_features_path(cfg)
@@ -423,84 +414,27 @@ def main():
 
                                                                 # check if experiment has been done
                                                                 checkpoint_dir = os.path.join(save_dir, hyperparams_str)
-                                                                best_val_path = os.path.join(checkpoint_dir, "best_val.pth")
-                                                                last_iter_path = os.path.join(checkpoint_dir, "last_iter.pth")
-                                                                if not os.path.exists(best_val_path) or not os.path.exists(last_iter_path):
-                                                                    all_dataset_finished = False
-                                                                    all_seed_finished = False
-                                                                    all_hyper_finished = False
+                                                                test_result_path = os.path.join(checkpoint_dir, "test_result.pth")
+                                                                if not os.path.exists(checkpoint_dir):
+                                                                    # all_dataset_finished = False
+                                                                    # all_seed_finished = False
+                                                                    # all_hyper_finished = False
                                                                     import pdb; pdb.set_trace()
                                                                     continue
                                                                 else:
-                                                                    test_result_dict = {}
-                                                                    test_result_path = os.path.join(checkpoint_dir, "test_result.pth")
-                                                                    if os.path.exists(test_result_path):
-                                                                        print(f"Already exists: {hyperparams_str} {cur_count}/{experiment_count}")
-                                                                        try:
-                                                                            test_result_dict = torch.load(test_result_path)
-                                                                        except:
-                                                                            import pdb; pdb.set_trace()
-                                                                        for key in ['best_val', 'last_iter']:
-                                                                            normhead_keys = [eval_type for eval_type in test_result_dict[key]['test_accs'] if "normhead" in eval_type]
-                                                                            for eval_type in normhead_keys:
-                                                                                del test_result_dict[key]['test_accs'][eval_type]
-                                                                    else:
-                                                                        test_result_dict = {
-                                                                            'best_val': {},
-                                                                            'last_iter': {},
-                                                                        }
-                                                                        for key in ['best_val', 'last_iter']:
-                                                                            try:
-                                                                                result_dict = torch.load(os.path.join(checkpoint_dir, f"{key}.pth"))
-                                                                            except:
-                                                                                import pdb; pdb.set_trace()
-                                                                            test_result_dict[key]['val_acc'] = result_dict['val_acc']
-                                                                            test_result_dict[key]['iter'] = result_dict['iter']
-                                                                            test_result_dict[key]['test_accs'] = {}
-
-                                                                            # Create the logreg model and load the weights
-                                                                            head, num_classes, in_features = make_classifier_head(
-                                                                                cfg.ARCHITECTURE.HEAD, cfg.FEATURE.BACKBONE, cfg.ARCHITECTURE.BIAS, text_dataset)
-                                                                            old_logit_head = make_logit_head(
-                                                                                head,
-                                                                                cfg.LOGIT.FEATURE_NORM,
-                                                                                cfg.LOGIT.HEAD_NORM,
-                                                                                cfg.LOGIT.USE_LOGIT_SCALE,
-                                                                                logit_scale=cfg.LOGIT.LOGIT_SCALE,
-                                                                                learn_logit_scale=cfg.LOGIT.LEARN_LOGIT_SCALE,
-                                                                                init_learn_logit_scale=cfg.LOGIT.INIT_LEARN_LOGIT_SCALE,
-                                                                            )
-                                                                            old_logit_head.load_state_dict(result_dict['logit_head'])
-                                                                            if old_logit_head.logit_scale is not None:
-                                                                                test_result_dict[key]['logit_scale'] = float(old_logit_head.logit_scale.data)
-                                                                            else:
-                                                                                test_result_dict[key]['logit_scale'] = None
-
-                                                                            zero_shot_weights = get_zero_shot_weights(text_dataset, num_classes, in_features)
-                                                                            eval_heads = get_eval_heads(deepcopy(old_logit_head.head), zero_shot_weights)
-
-                                                                            image_encoder = torch.load(image_encoder_path).partial_model
-                                                                            image_encoder.load_state_dict(result_dict['image_encoder'])
-                                                                            image_encoder = image_encoder.cuda().eval()
-                                                                            text_encoder = torch.load(text_encoder_path).partial_model
-                                                                            text_encoder.load_state_dict(result_dict['text_encoder'])
-                                                                            text_encoder = text_encoder.cuda().eval()
-
-                                                                            for eval_type in eval_heads:
-                                                                                eval_head = eval_heads[eval_type]
-                                                                                eval_head.cuda().eval()
-                                                                                test_loader = DataLoader(
-                                                                                    test_dataset,
-                                                                                    batch_size=cfg.DATALOADER.TEST_BATCH_SIZE,
-                                                                                    shuffle=False,
-                                                                                    num_workers=1,
-                                                                                    pin_memory=True,
-                                                                                )
-                                                                                test_acc = validate(eval_head, image_encoder, test_loader, device="cuda")
-                                                                                test_result_dict[key]['test_accs'][eval_type] = test_acc
-                                                                        torch.save(test_result_dict, test_result_path)
-                                                                        print(test_result_dict)
-                                                                        print(f"Finished testing {hyperparams_str} {cur_count}/{experiment_count}")
+                                                                    try:
+                                                                        test_result_dict = torch.load(test_result_path)
+                                                                    except:
+                                                                        import pdb; pdb.set_trace()
+                                                                    for key in ['best_val', 'last_iter']:
+                                                                        normhead_keys = [eval_type for eval_type in test_result_dict[key]['test_accs'] if "normhead" in eval_type]
+                                                                        for eval_type in normhead_keys:
+                                                                            del test_result_dict[key]['test_accs'][eval_type]
+                                                                        wiseft_keys = [eval_type for eval_type in test_result_dict[key]['test_accs'] if "wiseft" in eval_type]
+                                                                        for eval_type in wiseft_keys:
+                                                                            del test_result_dict[key]['test_accs'][eval_type]
+                                                                    print(test_result_dict)
+                                                                    print(f"Finished testing {hyperparams_str} {cur_count}/{experiment_count}")
                                                                     all_hyper_dict[lr][wd][batch_size][iters] = test_result_dict   
                                                                 
                                                                 
